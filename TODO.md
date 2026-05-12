@@ -71,7 +71,7 @@ Seda saame järjepidamise mõttes jooksvalt täitma hakata.
 Iga grupi kohta vastate 6 punktile. Iga vastus peab olema sisuline ja konkreetne, viidates just selle grupi tööle. Üldised vastused ("tubli", "hea töö") ei kvalifitseeru ja palutakse ümber teha.
 
 1.  **Äriküsimus ja väärtus.** Kas grupi äriküsimus on selge ja kas dashboard vastab sellele? Kas kasutaksid päriselt?
-2.  **Andmevoog.**Kas andmetoru on terviklik (allikad → transformatsioon → dashboard)? Kas ajas muutuvus tuleb välja?
+2.  **Andmevoog.** Kas andmetoru on terviklik (allikad → transformatsioon → dashboard)? Kas ajas muutuvus tuleb välja?
 3.  **Andmekvaliteet.** Kas testid katavad olulisi probleeme? Mis võiks veel lisada?
 4.  **Tehniline lahendus.** Mis tundus tark valik? Mis oleks ise teisiti teinud?
 5.  **Selgus ja esitlus.** Kas video on arusaadav? Mis jäi segaseks?
