@@ -6,3 +6,7 @@
 3.  Andmeallikate loetelu ja muutuvuse kirjeldust
 4.  Tööjaotust (kes mille eest vastutab)
 5.  2-3 riski
+
+Keskkonnaregister avaandmed:
+https://keskkonnaandmed.envir.ee/
+Püü täpsustab milline(millsed) tabelid
