@@ -23,12 +23,12 @@ Projektitöö ideid võivad esitada ka mentorid.
 
 ### Meie teema
 
-1. Teema pakkuja nimi
-2. E-mail
-3. Tase
-4. Teema pealkiri
-5. Äriküsimus
-6. Andmeallikad ja nende muutuvus ajas
-7. Andmete jagatavus
-8. Mitut grupi liiget otsite?
+1. Teema pakkuja nimi - Püü, Õie ja Lea
+2. E-mail - 
+3. Tase - eelistus puudub
+4. Teema pealkiri - Huviväärsuste andmebaasi ajakohasena hoidmine vabaandmete põhjal
+5. Äriküsimus - Oluline on, et huviväärsuste andmed oleksid maksimaalselt ajakohased. Vajadus jälgida muutuseid registrites.
+6. Andmeallikad ja nende muutuvus ajas - Keskkonnaportaali avaandmed, https://keskkonnaandmed.envir.ee/, muutused pidevad, teoreetiliselt muutub andmestik igapäevaselt aga sõltuvalt andmekihist võivad olla muutused harvemad. Keskendume jäätmete teemale keskkonnaregistris, et uuendada prügilate, jäätmejaamade ja jäätmekäitluskohtade kategooriaid huviväärsuste andmebaasis.
+7. Andmete jagatavus - avalikud
+8. Mitut grupi liiget otsite? 0
 9. Lisamärkused
