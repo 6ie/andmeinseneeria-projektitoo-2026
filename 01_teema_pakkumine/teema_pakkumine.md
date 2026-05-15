@@ -26,7 +26,7 @@ Projektitöö ideid võivad esitada ka mentorid.
 1. Teema pakkuja nimi - Püü, Õie ja Lea
 2. E-mail - 
 3. Tase - eelistus puudub
-4. Teema pealkiri - Huviväärsuste andmebaasi ajakohasena hoidmine vabaandmete põhjal
+4. Teema pealkiri - Huviväärsuste andmebaasi ajakohasena hoidmine vabaandmete abil
 5. Äriküsimus - Oluline on, et huviväärsuste andmed oleksid maksimaalselt ajakohased. Vajadus jälgida muutuseid registrites.
 6. Andmeallikad ja nende muutuvus ajas - Keskkonnaportaali avaandmed, https://keskkonnaandmed.envir.ee/, muutused pidevad, teoreetiliselt muutub andmestik igapäevaselt aga sõltuvalt andmekihist võivad olla muutused harvemad. Keskendume jäätmete teemale keskkonnaregistris, et uuendada prügilate, jäätmejaamade ja jäätmekäitluskohtade kategooriaid huviväärsuste andmebaasis.
 7. Andmete jagatavus - avalikud
