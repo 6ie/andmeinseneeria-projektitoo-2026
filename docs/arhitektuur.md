@@ -8,5 +8,12 @@
 5.  2-3 riski
 
 Keskkonnaregister avaandmed:
-https://keskkonnaandmed.envir.ee/
+https://keskkonnaandmed.envir.ee/f_jkkregister_curr
 Püü täpsustab milline(millsed) tabelid
+ilmselt sobiks see kõige paremini: f_jkkregister_curr (Jäätmekäitluskohtade register)
+https://keskkonnaandmed.envir.ee/f_jkkregister_curr
+
+Esialgsed arhitektuuri mõtted:
+- Apache AirFlow
+- PostgreSQL, funktsioonid/protseduurid seal
+- Metabase
