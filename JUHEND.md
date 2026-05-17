@@ -1,5 +1,5 @@
-
-
+Lisasin siia Dockeri kirjelduse, käsud käivitamiseks ja esimese test skripti API ühenduse testimiseks.  
+17.05.2026 - Laadis 2953 rida f_jkkregister_curr tabelisse (Õie)
 
 ### Seadistamine
 
@@ -77,3 +77,16 @@ pgAdminis andmebaasiga ühenduse lisamiseks kasuta hosti `analytics-db`.
 Airflow saab lahti võtta aadressil: [http://localhost:8080](http://localhost:8080)
 
 
+## Lihtne ETL ühenduse katsetamiseks
+
+Skript põhineb 1. edasijõudnute praktikumi näitel (etl_simple.py).
+Loeb jäätmekäitluskohtade registri andmetest ainult veerud objekti_nimetus ja jkk_kood.
+url = "https://keskkonnaandmed.envir.ee/f_jkkregister_curr?select=objekti_nimetus,jkk_kood"
+
+Loob andmebaasi tabeli ja täidab selle andmetega.
+
+```bash
+docker exec -it poi-upd-python sh -c "python /scripts/poi-upd-f_jkkregister_curr.py"
+```
+
+17.05.2026 - Laadis 2953 rida
