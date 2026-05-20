@@ -1,15 +1,15 @@
-# [GRUPI NIMI] — [PROJEKTI PEALKIRI]
+# [GRUPI NIMI] — [Huviväärsuste andmebaasi ajakohasena hoidmine vabaandmete abil]
 
 > **Juhend:** Asenda kõik nurksulgudes vormid oma sisuga enne esitamist. Kustuta see juhendrida.
 
 ## Äriküsimus
 
-[Kirjelda ühe-kahe lausega, millise andmetega seotud probleemi te lahendate ja kes sellest kasu saab.]
+[Ruumiandmetel põhinevate teenuste pakkujale (Regio) on oluline, et andmestik on võimalikult ajakohane ja kvaliteetne. Huviväärsuste andmed on hajusad, muutusi tuleb korjata erinevatest vabaandmestikest, ümber klassifitseerida ning andmete õigsuses veenduda.  Muutuste ebaregulaarsusest tingituna on optimaalseks töökorralduseks mõistlik luua juhtlaud, mis kajastab kontrollimist vajavate muudatuste mahtu.]
 
 **Mõõdikud:**
 
-1. [Esimene KPI või mõõdik — näiteks: päevane müük poe kohta]
-2. [Teine KPI või mõõdik]
+1. [Esimene KPI või mõõdik — näiteks: päevane müük poe kohta/ muutunud kirjete arv andmekihi kohta]
+2. [Teine KPI või mõõdik läbivaatamata muutuste arv andmekihil]
 3. [Kolmas KPI või mõõdik — vabatahtlik]
 
 ## Arhitektuur
