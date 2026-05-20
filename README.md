@@ -4,7 +4,7 @@
 
 ## Äriküsimus
 
-[Ruumiandmetel põhinevate teenuste pakkujale (Regio) on oluline, et andmestik on võimalikult ajakohane ja kvaliteetne. Huviväärsuste andmed on hajusad, muutusi tuleb korjata erinevatest vabaandmestikest, ümber klassifitseerida ning andmete õigsuses veenduda.  Muutuste ebaregulaarsusest tingituna on optimaalseks töökorralduseks mõistlik luua juhtlaud, mis kajastab kontrollimist vajavate muudatuste mahtu.]
+[Moodle: Ruumiandmetel põhinevate teenuste pakkujale (Regio) on oluline, et andmestik on võimalikult ajakohane ja kvaliteetne. Huviväärsuste andmed on hajusad, muutusi tuleb korjata erinevatest vabaandmestikest, ümber klassifitseerida ning andmete õigsuses veenduda.  Muutuste ebaregulaarsusest tingituna on optimaalseks töökorralduseks mõistlik luua juhtlaud, mis kajastab kontrollimist vajavate muudatuste mahtu. ÄRIKÜSIMUS Kas ja kui palju/milliseid jäätmeregistri andmetes on toimunud muutusi, mis vajavad huvivääruste andmestikus läbivaatamist]
 
 **Mõõdikud:**
 
