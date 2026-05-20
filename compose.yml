@@ -211,6 +211,27 @@ services:
       analytics-db:
         condition: service_healthy
 
+  # --- Metabase ---
+  metabase:
+    image: metabase/metabase:latest
+    container_name: poi-upd-metabase
+    hostname: metabase
+    volumes:
+      - ./dashboard:/dashboard
+    ports:
+      - 3001:3000
+    depends_on:
+      analytics-db:
+        condition: service_healthy
+    environment:
+      MB_DB_TYPE: ${MB_DB_TYPE}
+      MB_DB_DBNAME: ${MB_DB_DBNAME}
+      MB_DB_PORT: ${MB_DB_PORT}
+      MB_DB_USER: ${MB_DB_USER}
+      MB_DB_PASS: ${MB_DB_PASS}
+      MB_DB_HOST: ${MB_DB_HOST}
+    restart: unless-stopped
+    
 volumes:
   analytics-db-volume:
   airflow-db-volume:

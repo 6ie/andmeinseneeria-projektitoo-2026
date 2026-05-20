@@ -14,7 +14,7 @@ cp .env.example .env
 
 3. Vajadusel muuda `.env` failis kasutajanimed ja paroolid.
 
-4. Käivita teenused:
+4. Käivita teenused (läheb kaua):
 
 ```bash
 docker compose -p poi-upd up -d
@@ -58,6 +58,7 @@ docker compose -p poi-upd down -v
 | airflow-dag-processor | `poi-upd-airflow-dagproc` | DAG-ide parsimine
 | Python | `poi-upd-python` | Python 3.12 koos `psycopg2` ja `requests` teekidega |
 | pgAdmin | `poi-upd-pgadmin` | Veebipõhine andmebaasihaldur |
+| Metabase | `poi-upd-metabase` | Metabase juhtimislaua tegemiseks |
 
 ### Ühendused
 
@@ -68,6 +69,7 @@ Vaikimisi väärtused (`.env.example` põhjal):
 | PostgreSQL | `projektitoo` | `projektitoo` | 5432 |
 | pgAdmin | `admin@example.com` | `admin` | 5050 |
 | Airflow | `airflow`| `airflow` | 8080 |
+| Metabase | `metabase`| `metabase` | 3001 |
 
 pgAdmini saab lahti võtta aadressil:
 [http://localhost:5050](http://localhost:5050)
@@ -76,6 +78,7 @@ pgAdminis andmebaasiga ühenduse lisamiseks kasuta hosti `analytics-db`.
 
 Airflow saab lahti võtta aadressil: [http://localhost:8080](http://localhost:8080)
 
+Matabase saab lahti võtta aadressil [http://localhost:3001](http://localhost:3001)
 
 ## Lihtne ETL ühenduse katsetamiseks
 
@@ -90,3 +93,4 @@ docker exec -it poi-upd-python sh -c "python /scripts/poi-upd-f_jkkregister_curr
 ```
 
 17.05.2026 - Laadis 2953 rida
+20.05.2026 - Laadis 2956 rida
