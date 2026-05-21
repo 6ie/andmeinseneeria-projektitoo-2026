@@ -2,7 +2,7 @@
 
 ## Äriküsimus
 
-Ärivajadus on hoida jäätmekäitlusregistri põhised huvipunktide andmed ettevõtte POI andmebaasis maksimaalselt ajakohasena võimalikult vähese käsitööga. Lahendus peab lisaks sisestusvamis muudatuste ette valmistamisele andma ülevaate nende käsitlemise seisust, et spetsialist saaks hinnata töömahtu, andmete ajakohasust ja andmehoolduse prioriteete.
+Ärivajadus on hoida jäätmekäitlusregistri põhised huvipunktide andmed ettevõtte POI andmebaasis maksimaalselt ajakohasena võimalikult vähese käsitööga. Lahendus peab lisaks sisestusvalmis muudatuste ette valmistamisele andma ülevaate nende käsitlemise seisust, et spetsialist saaks hinnata töömahtu, andmete ajakohasust ja andmehoolduse prioriteete.
 
 ## Mõõdikud
 
@@ -13,20 +13,18 @@ Näitab, mitu jäätmekäitlusregistri objekti on tuvastatud POI andmebaasi jaok
 Näitab, kas lahendamata muudatused on seotud lisandunud objektide, eemaldatud objektide, atribuudimuutuste või asukohamuutustega.
 
 3. **Lahendamata muudatuste ruumiline paiknemine**  
-Näitab kaardil, kus lahendamata muudatused paiknevad, et spetsialist saaks hinnata töö piirkondlikku jaotust ja prioriteetsust.
+Näitab kaardil, kus lahendamata muudatused paiknevad, et spetsialist saaks hinnata töö piirkondlikku jaotust ja prioriteetsust. Kui jõuame selleni.
 
 ## Andmeallikad
 
-Keskkonnaregister avaandmed:
+Keskkonnaregisteri jäämetkäitluskohtade register avaandmed:
 https://keskkonnaandmed.envir.ee/f_jkkregister_curr
-Püü täpsustab milline(millsed) tabelid
-ilmselt sobiks see kõige paremini: f_jkkregister_curr (Jäätmekäitluskohtade register)
-https://keskkonnaandmed.envir.ee/f_jkkregister_curr
+
 
 | Allikas | Tüüp | Ajas muutuv? | Roll |
 |---------|------|--------------|------|
-| Jäätmekäitlusregister | Avalik PostgREST/JSON API | Jah, registriandmed uuenevad jooksvalt | Peamine andmeallikas, kust võetakse jäätmekäitlusega seotud objektide hetkeseis |
-| algne POI seoste tabel | Ühekordne algseadistuse tabel CSV formaadis | Ei, staatiline | Aitab esmakordsel andmevoo loomisel siduda olemasolevad registriobjektid ettevõtte POI andmebaasi objektidega |
+| Jäätmekäitluskohtade register | Avalik PostgREST/JSON API | Jah, registriandmed uuenevad jooksvalt | Peamine andmeallikas, kust võetakse jäätmekäitlusega seotud objektide hetkeseis |
+| Algne POI seoste tabel | Ühekordne algseadistuse tabel CSV formaadis | Ei, staatiline | Aitab esmakordsel andmevoo loomisel siduda olemasolevad registriobjektid ettevõtte POI andmebaasi objektidega |
 
 
 ## Andmevoog
