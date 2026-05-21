@@ -23,9 +23,10 @@ https://keskkonnaandmed.envir.ee/f_jkkregister_curr
 
 | Allikas | Tüüp | Ajas muutuv? | Roll |
 |---------|------|--------------|------|
-| Jäätmekäitluskohtade register | Avalik PostgREST/JSON API | Jah, registriandmed uuenevad jooksvalt | Peamine andmeallikas, kust võetakse jäätmekäitlusega seotud objektide hetkeseis |
-| Algne POI seoste tabel | Ühekordne algseadistuse tabel CSV formaadis | Ei, staatiline | Aitab esmakordsel andmevoo loomisel siduda olemasolevad registriobjektid ettevõtte POI andmebaasi objektidega |
-
+| Jäätmekäitluskohtade register | Avalik PostgREST/JSON API | Jah, registriandmed uuenevad jooksvalt* | Peamine andmeallikas, kust võetakse jäätmekäitlusega seotud objektide hetkeseis |
+| Algne POI ja JKKR seoste tabel | Ühekordne algseadistuse tabel CSV formaadis | Ei, staatiline* | Aitab esmakordsel andmevoo loomisel siduda olemasolevad registriobjektid ettevõtte POI andmebaasi objektidega |
+*andmete sissevõtu testid 17-05-2026 2953 kirjet, 20-05-2026 2956 kirjet.
+**äripoole andmete kaitsmiseks projektitöö skoobis kasutame staatilist, vähendatud andmestikku, mis on piisav võrdlusbaasi loomiseks.
 
 ## Andmevoog
 
@@ -68,19 +69,19 @@ Mõlemas tabelis on koos automaatselt ETL poolt hallatavad veerud ja spetsialist
 | Roll | Vastutus | Täitja |
 |------|----------|--------|
 | Andmeallika omanik | Kirjutab sissevõtu loogika | Õie |
-| Transformatsioonide omanik | Kirjutab mart kihi mudelid ja mõõdikute arvutuse | [Püü] |
-| Kvaliteedi omanik | Kirjutab testid ja vaatab läbi ebaõnnestunud kontrollid | [Õie ja Püü] |
-| Näidikulaua omanik | Ehitab näidikulaua ja seob selle äriküsimusega | [Lea] |
-| Adminstratiivtöö omanik | korraldab | [Lea] |
+| Transformatsioonide omanik | Kirjutab mart kihi mudelid ja mõõdikute arvutuse | Püü |
+| Kvaliteedi omanik | Kirjutab testid ja vaatab läbi ebaõnnestunud kontrollid | Õie ja Püü |
+| Näidikulaua omanik | Ehitab näidikulaua ja seob selle äriküsimusega | Lea |
+| Adminstratiivtöö omanik | korraldab | Lea |
 
 ## Riskid
 
 | Risk | Mõju | Maandus |
 |------|------|---------|
-| [Risk 1 — API vastus on tühi json] | [Andmeid ei ole] | [Andmevoogu ei lasta lõpuni joosta, väljastatakse hoiatus ja lõpetatakse töövoo töö, eksponentviivitus] |
-| [Risk 2  — API vastus on osaline ] | [Võib tekkida eksitav tulemus, et tuleks suur osa andmetest sihtbaasis kustutada] | [Kontrollid -kirjete arvu loogikakontroll, päise veerunimede, not null kontroll] |
-| [Risk 3 - töövoog ei jookse edukalt lõpuni] | [Võrdlusbaas(full baas) täietakse osaliselt ning edasised võrdlused on ekslikud] | [Küsime konsultatsiooni ja otsime AIga lahendusi rollbackiks?] |
+| API vastus on tühi json | Andmeid ei ole | Väljastatakse hoiatus ja peatatakse töövoog, eksponentviivitus |
+| API vastus on osaline |Võib tekkida eksitav tulemus, et tuleks suur osa andmetest sihtbaasis kustutada | Kirjete arvu loogikakontroll, päise, veerunimede, 'not null' kontroll |
+| töövoog ei jookse edukalt lõpuni | Võrdlusbaas (full baas) täietakse osaliselt ning edasised võrdlused on ekslikud | Küsime konsultatsiooni ja otsime AIga lahendusi rollbackiks? |
 
 ## Privaatsus ja turve
 
-[Tundlikke andmeid ei esine, äriandmed on kaitstud õhekordse piiratud väljavõtte kasutamisega. Andmebaasi paroolid peavad tulema `.env` failist.]
+Projektis ei töödelda tundlikke ega eriliigilisi isikuandmeid. Äriandmete kaitse on tagatud ühekordse ja piiratud mahuga andmeväljavõtte kasutamisega, mis ei võimalda juurdepääsu tootmiskeskkonna täielikule andmestikule. Kõik rakenduse toimimiseks vajalikud konfidentsiaalsed ligipääsuandmed — sealhulgas andmebaasi paroolid ja muud süsteemisaladused — hoitakse lokaalselt .env failis.
