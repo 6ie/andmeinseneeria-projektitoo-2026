@@ -69,8 +69,8 @@ Mõlemas tabelis on koos automaatselt ETL poolt hallatavad veerud ja spetsialist
 |------|----------|--------|
 | Andmeallika omanik | Kirjutab sissevõtu loogika | Õie |
 | Transformatsioonide omanik | Kirjutab mart kihi mudelid ja mõõdikute arvutuse | [Püü] |
-| Kvaliteedi omanik | Kirjutab testid ja vaatab läbi ebaõnnestunud kontrollid | [Nimi] |
-| Näidikulaua omanik | Ehitab näidikulaua ja seob selle äriküsimusega | [Nimi] |
+| Kvaliteedi omanik | Kirjutab testid ja vaatab läbi ebaõnnestunud kontrollid | [Õie ja Püü] |
+| Näidikulaua omanik | Ehitab näidikulaua ja seob selle äriküsimusega | [Lea] |
 | Adminstratiivtöö omanik | korraldab | [Lea] |
 
 ## Riskid
