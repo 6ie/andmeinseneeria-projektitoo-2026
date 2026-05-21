@@ -80,6 +80,12 @@ Airflow saab lahti võtta aadressil: [http://localhost:8080](http://localhost:80
 
 Matabase saab lahti võtta aadressil [http://localhost:3001](http://localhost:3001)
 
+### Esimene andmebaasi käivitus
+
+Meie repos on init katalooga ja sinna sisse saame panna schemade tabelite (csv sissetõmbamise) ja protseduuride tekitamise .sql failid. Konteineri käivitamisel jooksutatakse need automaatselt.
+See on Dockeris seadistatu analytics-db konteineri osas:`/docker-entrypoint-initdb.d`:
+
+
 ## Lihtne ETL ühenduse katsetamiseks
 
 Skript põhineb 1. edasijõudnute praktikumi näitel (etl_simple.py).
