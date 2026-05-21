@@ -67,19 +67,20 @@ Mõlemas tabelis on koos automaatselt ETL poolt hallatavad veerud ja spetsialist
 
 | Roll | Vastutus | Täitja |
 |------|----------|--------|
-| Andmeallika omanik | Kirjutab sissevõtu loogika, hoiab API-t töös | [Nimi] |
-| Transformatsioonide omanik | Kirjutab mart kihi mudelid ja mõõdikute arvutuse | [Nimi] |
+| Andmeallika omanik | Kirjutab sissevõtu loogika | Õie |
+| Transformatsioonide omanik | Kirjutab mart kihi mudelid ja mõõdikute arvutuse | [Püü] |
 | Kvaliteedi omanik | Kirjutab testid ja vaatab läbi ebaõnnestunud kontrollid | [Nimi] |
 | Näidikulaua omanik | Ehitab näidikulaua ja seob selle äriküsimusega | [Nimi] |
+| Adminstratiivtöö omanik | korraldab | [Lea] |
 
 ## Riskid
 
 | Risk | Mõju | Maandus |
 |------|------|---------|
-| [Risk 1 — näiteks: API ei vasta] | [Mis juhtub?] | [Kuidas maandad?] |
-| [Risk 2] | [Mis juhtub?] | [Kuidas maandad?] |
-| [Risk 3] | [Mis juhtub?] | [Kuidas maandad?] |
+| [Risk 1 — API vastus on tühi json] | [Andmeid ei ole] | [Andmevoogu ei lasta lõpuni joosta, väljastatakse hoiatus ja lõpetatakse töövoo töö, eksponentviivitus] |
+| [Risk 2  — API vastus on osaline ] | [Võib tekkida eksitav tulemus, et tuleks suur osa andmetest sihtbaasis kustutada] | [Kontrollid -kirjete arvu loogikakontroll, päise veerunimede, not null kontroll] |
+| [Risk 3 - töövoog ei jookse edukalt lõpuni] | [Võrdlusbaas(full baas) täietakse osaliselt ning edasised võrdlused on ekslikud] | [Küsime konsultatsiooni ja otsime AIga lahendusi rollbackiks?] |
 
 ## Privaatsus ja turve
 
-[Kirjelda, millised isiku- või tundlikud andmed teie projektis esinevad (kui üldse) ja kuidas neid kaitsete. Isikuandmed peavad olema anonümiseeritud. Andmebaasi paroolid peavad tulema `.env` failist.]
+[Tundlikke andmeid ei esine, äriandmed on kaitstud õhekordse piiratud väljavõtte kasutamisega. Andmebaasi paroolid peavad tulema `.env` failist.]
