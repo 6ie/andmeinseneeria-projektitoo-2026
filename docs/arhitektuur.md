@@ -28,93 +28,42 @@ https://keskkonnaandmed.envir.ee/f_jkkregister_curr
 | Jäätmekäitlusregister | Avalik PostgREST/JSON API | Jah, registriandmed uuenevad jooksvalt | Peamine andmeallikas, kust võetakse jäätmekäitlusega seotud objektide hetkeseis |
 | algne POI seoste tabel | Ühekordne algseadistuse tabel CSV formaadis | Ei, staatiline | Aitab esmakordsel andmevoo loomisel siduda olemasolevad registriobjektid ettevõtte POI andmebaasi objektidega |
 
-## Andmevoog
-
-Esialgsed arhitektuuri mõtted:
-- Apache AirFlow
-- PostgreSQL, funktsioonid/protseduurid seal
-- Metabase
-
 
 ## Andmevoog
 
-```mermaid
-flowchart LR
-    source[Jäätmekäitlusregister<br/>PostgREST JSON API]
+![Arhitektuuriskeem](arhitektuuriskeem.drawio.svg)
 
-    subgraph etl[Praktikumi käigus arendatav ETL töövoog]
-        raw[(staging.raw_snapshot)]
-        stg[(staging.register_clean)]
-        diff[(intermediate.register_diff)]
-        full[(production.full_register)]
-        changes[(production.poi_changes)]
-        dash[Metabase dashboard]
-        airflow[Airflow + Python]
-        sql[PostgreSQL / PostGIS SQL]
-
-        airflow -->|pärib andmed| raw
-        raw -->|parsimine ja puhastus| stg
-        stg -->|võrdlus eelmise seisuga| diff
-        diff -->|uuendab registri hetkeseisu| full
-        diff -->|lisab uued muutused| changes
-        full -->|KPI-d ja ülevaated| dash
-        changes -->|muutuste tööjärg| dash
-    end
-
-    subgraph external[Päris tööprotsessi osa, mida täielikult ei arendata ega demonstreerita]
-        qgis[QGIS<br/>spetsialisti töölaud]
-        poi[(Ettevõtte POI andmebaas)]
-    end
-
-    source -->|HTTP GET / JSON| airflow
-    sql --> full
-    sql --> changes
-
-    full -->|vaatamine, seoste haldus,<br/>staatuse muutmine, geomeetria täpsustus| qgis
-    changes -->|muudatuste kontroll ja kinnitamine| qgis
-    qgis -->|kinnitatud muudatuste sisestus| poi
-
-    classDef demo fill:#dff3ff,stroke:#2b6cb0,stroke-width:1.5px,color:#000;
-    classDef external fill:#eeeeee,stroke:#888888,stroke-width:1px,color:#000;
-
-    class raw,stg,diff,full,changes,dash,airflow,sql demo;
-    class qgis,poi external;
-```
-```mermaid
-flowchart LR
-    source[Jäätmekäitlusregister<br/>PostgREST JSON API] --> airflow[Apache Airflow]
-    airflow --> ingest[Python sissevõtu skript]
-    ingest --> staging[(staging<br/>registri hetkeseis)]
-    staging --> transform[PostgreSQL/PostGIS<br/>transformatsioonid]
-    transform --> full[(full tabel<br/>registri seis + töövoo väljad)]
-    transform --> changes[(muudatuste tabelid<br/>uued, eemaldatud, muutunud)]
-    full --> qgis[QGIS<br/>spetsialisti töölaud]
-    changes --> qgis
-    full --> dashboard[Metabase dashboard]
-    changes --> dashboard
-    full --> quality[Andmekvaliteedi kontrollid]
-    changes --> quality
-```
-
-```mermaid
-flowchart LR
-    source[Andmeallikas] --> ingest[Sissevõtt]
-    ingest --> staging[(staging)]
-    staging --> transform[Transformatsioon]
-    transform --> mart[(mart)]
-    mart --> dashboard[Näidikulaud]
-    mart --> quality[Andmekvaliteedi testid]
-    scheduler[Scheduler] --> ingest
-```
-
-> Täpsusta diagrammi vastavalt oma projektile — lisa rohkem andmeallikaid, mudeleid või teenuseid.
 
 ## Andmebaasi kihid
 
-| Kiht | Roll |
-|------|------|
-| `staging` | Hoiab allika andmeid töötlemata kujul. |
-| `mart` | Hoiab transformeeritud ja ärilogikat sisaldavaid tabeleid. |
+| Kiht | Roll | Näidistabelid |
+|------|------|---------------|
+| `staging` | Hoiab API-st saadud toorandmeid koos jooksu identifikaatori ja laadimise ajaga. Seda kihti kasutatakse auditeerimiseks, vigade otsimiseks ja vajadusel sama jooksu uuesti töötlemiseks. | `staging.raw_snapshot` |
+| `intermediate` | Hoiab viimase jooksu töödeldud (tabeli kujule viidud, puhastatud, ümber kodeeritud)registriseisu. Selles kihis on andmed valmis võrdluseks eelmise seisuga. | `intermediate.clean_current_run` |
+| `production` | Hoiab spetsialisti tööks vajalikke püsivaid tabeleid. Siia jõuavad registriobjektide koondseis ja sisestusvalmis muudatuste tööjärg. Siin hallatakse ka muutuste sisestamise staatuseid ja seoseid sihtandmebaasi objektidega | `production.jkk_full`, `production.jkk_changes` |
+
+### staging kiht
+
+`staging` kihis salvestatakse jäätmekäitlusregistri API-st saadud toorandmed. Iga automaatne töövoo käivitus saab oma `run_id` väärtuse ja laadimise aja.
+
+Toorandmete säilitamine võimaldab hiljem kontrollida, millise registriseisu põhjal muudatused tuvastati. Praktikumi projektis võib toorandmeid säilitada kogu projekti jooksul. Päris lahenduses võiks säilitamise aega piirata, näiteks hoida alles viimased 30 päeva või viimased N jooksu.
+
+### intermediate kiht
+
+`intermediate` kihis viiakse jooksu andmed kahemõõtmelise tabeli kujul, milles on andmed normaliseeritud ja võrdluseks sobivale kujule viidud. See kiht ei ole mõeldud kasutaja käsitsi tööks, vaid ETL protsessi vahetulemuseks.
+
+Selles kihis hoitakse üldjuhul ainult viimase jooksu puhastatud seisu. Seda võrreldakse `production.jkk_full` tabelis oleva varasema seisuga, et tuvastada uued, eemaldatud ja muutunud objektid.
+
+
+### production kiht
+
+`production` kihis asuvad tabelid, mida kasutatakse spetsialisti tööks ja dashboardi koostamiseks. 
+
+Põhitabelid on:
+- `jkk_full` Kõigi kunagi nähtud huvipakkuvate registriobjektide koondtabel. 
+- `jkk_changes` Sisestusvalmis muudatuste tööjärg, kuhu lisatakse uued, eemaldatud ja muutunud objektid.
+
+Mõlemas tabelis on koos automaatselt ETL poolt hallatavad veerud ja spetsialisti hallatavad täpsustavad ja sihtbaasiga siduvad veergud.
 
 ## Tööjaotus
 
