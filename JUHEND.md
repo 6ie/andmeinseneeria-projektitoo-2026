@@ -50,7 +50,7 @@ docker compose -p poi-upd down -v
 
 | Teenus | Konteiner | Kirjeldus |
 |--------|-----------|-----------|
-| PostgreSQL | `poi-upd-analytics-db` | Andmebaas (pgduckdb) |
+| PostgreSQL | `poi-upd-pgdb` | Andmebaas (pgduckdb) |
 | airflow-db | `poi-upd-airflow-db` | Airflow metaandmebaas
 | airflow-init | `poi-upd-airflow-init` | ühekordne initsialiseerimine
 | airflow-apiserver | `poi-upd-airflow-api` | Airflow UI ja REST API (port 8080)
@@ -74,7 +74,7 @@ Vaikimisi väärtused (`.env.example` põhjal):
 pgAdmini saab lahti võtta aadressil:
 [http://localhost:5050](http://localhost:5050)
 
-pgAdminis andmebaasiga ühenduse lisamiseks kasuta hosti `analytics-db`.
+pgAdminis andmebaasiga ühenduse lisamiseks kasuta hosti `poi-upd-db`.
 
 Airflow saab lahti võtta aadressil: [http://localhost:8080](http://localhost:8080)
 
@@ -83,7 +83,7 @@ Matabase saab lahti võtta aadressil [http://localhost:3001](http://localhost:30
 ### Esimene andmebaasi käivitus
 
 Meie repos on init katalooga ja sinna sisse saame panna schemade tabelite (csv sissetõmbamise) ja protseduuride tekitamise .sql failid. Konteineri käivitamisel jooksutatakse need automaatselt.
-See on Dockeris seadistatu analytics-db konteineri osas:`/docker-entrypoint-initdb.d`:
+See on Dockeris seadistatus andmebaasi konteineri osas:`/docker-entrypoint-initdb.d`:
 
 
 ## Lihtne ETL ühenduse katsetamiseks
@@ -101,7 +101,7 @@ docker exec -it poi-upd-python sh -c "python /scripts/poi-upd-f_jkkregister_curr
 17.05.2026 - Laadis 2953 rida
 20.05.2026 - Laadis 2956 rida
 
-## Andmete sissetõmbamine staging.pipelines tabelisse
+## Andmete sissetõmbamine staging.raw_snapshot tabelisse
 
 ```bash
 docker exec -it poi-upd-python sh -c "python /scripts/poi-upd-f_jkkregister_curr_ingest.py"

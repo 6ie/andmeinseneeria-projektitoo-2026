@@ -35,17 +35,17 @@ def load(data):
     cur = conn.cursor()
 
     cur.execute(
-        """INSERT INTO staging.pipeline_runs (run_id, fetched_at, source_name, raw_data, status)
+        """INSERT INTO staging.raw_snapshot (run_id, fetched_at, source_name, raw_data, status)
             VALUES (%s, %s, %s, %s, %s)""",
         (str(uuid.uuid4()), datetime.now(timezone.utc), "f_jkkregister_curr", Json(data), "SUCCESS"),
     )
 
     conn.commit()
-    print(f"  -> Laaditud andmed tabelisse pipeline_runs")
+    print(f"  -> Laaditud andmed tabelisse raw_snapshot")
 
     # Kontrolli tulemust
     cur.execute("""SELECT jsonb_array_length(raw_data) 
-                FROM staging.pipeline_runs 
+                FROM staging.raw_snapshot 
                 ORDER BY fetched_at DESC 
                 LIMIT 1""")
     count = cur.fetchone()[0]
