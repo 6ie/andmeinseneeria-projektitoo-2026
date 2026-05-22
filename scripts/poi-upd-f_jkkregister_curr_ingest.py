@@ -35,21 +35,27 @@ def load(data):
     cur = conn.cursor()
 
     cur.execute(
-        """INSERT INTO staging.raw_snapshot (run_id, fetched_at, source_name, raw_data, status)
-            VALUES (%s, %s, %s, %s, %s)""",
-        (str(uuid.uuid4()), datetime.now(timezone.utc), "f_jkkregister_curr", Json(data), "SUCCESS"),
+        """INSERT INTO staging.raw_snapshot (run_id, fetched_at, source_name, row_count, raw_data, status)
+            VALUES (%s, %s, %s, %s, %s, %s)""",
+        (str(uuid.uuid4()), datetime.now(timezone.utc), "f_jkkregister_curr", len(data), Json(data), "SUCCESS"),
     )
 
     conn.commit()
     print(f"  -> Laaditud andmed tabelisse raw_snapshot")
 
     # Kontrolli tulemust
-    cur.execute("""SELECT jsonb_array_length(raw_data) 
+    cur.execute("""SELECT fetched_at, jsonb_array_length(raw_data) 
                 FROM staging.raw_snapshot 
                 ORDER BY fetched_at DESC 
                 LIMIT 1""")
-    count = cur.fetchone()[0]
-    print(f"  -> Viimati laaditud tabelis kokku {count} rida")
+    row = cur.fetchone()
+    if row is None:
+        fetched = None
+        count = 0
+    else:
+        fetched, count = row[0], row[1]
+
+    print(f"  -> Viimati laaditud ({fetched}) tabelis f_jkkregister_curr kokku {count} rida")
 
     cur.close()
     conn.close()
