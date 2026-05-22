@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS staging.pipeline_runs (
     run_id uuid PRIMARY KEY,
     fetched_at timestamptz NOT NULL,
     source_name text NOT NULL,
+    raw_data jsonb NOT NULL,
     status text NOT NULL,
     message text
 );

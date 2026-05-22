@@ -1,0 +1,75 @@
+"""
+Andmete baasi sisselugemise skript: loeb JSON API-st andmeid ja laeb need PostgreSQL andmebaasi staging schemasse.
+"""
+
+import json
+import urllib.request
+import uuid
+import psycopg2
+from psycopg2.extras import Json
+import time
+from datetime import datetime, timezone
+import os
+
+DB_CONFIG = {   
+    "host": os.getenv("DB_HOST", "analytics-db"),
+    "port": int(os.getenv("DB_PORT", 5432)),
+    "dbname": os.environ["POSTGRES_DB"],
+    "user": os.environ["POSTGRES_USER"],
+    "password": os.environ["POSTGRES_PASSWORD"],
+}
+
+
+def extract():
+    """Extract: loeme PostgREST API-st jäätmekäitluskohtade registri andmed."""
+    url = "https://keskkonnaandmed.envir.ee/f_jkkregister_curr"
+    print(f"Extracting data from {url} ...")
+    req = urllib.request.Request(url)
+    with urllib.request.urlopen(req, timeout=15) as resp:
+        data = json.loads(resp.read().decode())
+    print(f"  -> Saadud {len(data)} jäätmekäitluskohta")
+    return data
+
+def load(data):
+    conn = psycopg2.connect(**DB_CONFIG)
+    cur = conn.cursor()
+
+    cur.execute(
+        """INSERT INTO staging.pipeline_runs (run_id, fetched_at, source_name, raw_data, status)
+            VALUES (%s, %s, %s, %s, %s)""",
+        (str(uuid.uuid4()), datetime.now(timezone.utc), "f_jkkregister_curr", Json(data), "SUCCESS"),
+    )
+
+    conn.commit()
+    print(f"  -> Laaditud andmed tabelisse pipeline_runs")
+
+    # Kontrolli tulemust
+    cur.execute("""SELECT jsonb_array_length(raw_data) 
+                FROM staging.pipeline_runs 
+                ORDER BY fetched_at DESC 
+                LIMIT 1""")
+    count = cur.fetchone()[0]
+    print(f"  -> Viimati laaditud tabelis kokku {count} rida")
+
+    cur.close()
+    conn.close()
+
+
+def main():
+    print("=== ETL protsess ===")
+    print()
+
+    # Extract
+    raw = extract()
+    print(f"Extracted: {len(raw)} kirjet\n")
+
+    # Load
+    load(raw)
+    print()
+    print("=== ETL lõpetatud ===")
+
+
+if __name__ == "__main__":
+    # Oota kuni andmebaas on valmis
+    time.sleep(3)
+    main()

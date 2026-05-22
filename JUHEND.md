@@ -100,3 +100,9 @@ docker exec -it poi-upd-python sh -c "python /scripts/poi-upd-f_jkkregister_curr
 
 17.05.2026 - Laadis 2953 rida
 20.05.2026 - Laadis 2956 rida
+
+## Andmete sissetõmbamine staging.pipelines tabelisse
+
+```bash
+docker exec -it poi-upd-python sh -c "python /scripts/poi-upd-f_jkkregister_curr_ingest.py"
+```
