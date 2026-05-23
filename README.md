@@ -1,16 +1,19 @@
-# [GRUPI NIMI] — [Huviväärsuste andmebaasi ajakohasena hoidmine vabaandmete abil]
-
-> **Juhend:** Asenda kõik nurksulgudes vormid oma sisuga enne esitamist. Kustuta see juhendrida.
+# POI — Huviväärsuste andmebaasi ajakohasena hoidmine vabaandmete abil
 
 ## Äriküsimus
 
-[Moodle: Ruumiandmetel põhinevate teenuste pakkujale (Regio) on oluline, et andmestik on võimalikult ajakohane ja kvaliteetne. Huviväärsuste andmed on hajusad, muutusi tuleb korjata erinevatest vabaandmestikest, ümber klassifitseerida ning andmete õigsuses veenduda.  Muutuste ebaregulaarsusest tingituna on optimaalseks töökorralduseks mõistlik luua juhtlaud, mis kajastab kontrollimist vajavate muudatuste mahtu. ÄRIKÜSIMUS Kas ja kui palju/milliseid jäätmeregistri andmetes on toimunud muutusi, mis vajavad huvivääruste andmestikus läbivaatamist]
+Ärivajadus on hoida jäätmekäitlusregistri põhised huvipunktide andmed ettevõtte POI andmebaasis maksimaalselt ajakohasena võimalikult vähese käsitööga. Lahendus peab lisaks sisestusvalmis muudatuste ette valmistamisele andma ülevaate nende käsitlemise seisust, et spetsialist saaks hinnata töömahtu, andmete ajakohasust ja andmehoolduse prioriteete.
 
 **Mõõdikud:**
 
-1. [Esimene KPI või mõõdik — näiteks: päevane müük poe kohta/ muutunud kirjete arv andmekihi kohta]
-2. [Teine KPI või mõõdik läbivaatamata muutuste arv andmekihil]
-3. [Kolmas KPI või mõõdik — vabatahtlik]
+1. **Lahendamata muudatuste arv ja osakaal**  
+Näitab, mitu jäätmekäitlusregistri objekti on tuvastatud POI andmebaasi jaoks uue, muutunud või eemaldatud objektina, kuid ei ole veel sihtandmebaasis käsitletud.
+
+2. **Lahendamata muudatuste jaotus tüübi järgi**  
+Näitab, kas lahendamata muudatused on seotud lisandunud objektide, eemaldatud objektide, atribuudimuutuste või asukohamuutustega.
+
+3. **Lahendamata muudatuste ruumiline paiknemine**  
+Näitab kaardil, kus lahendamata muudatused paiknevad, et spetsialist saaks hinnata töö piirkondlikku jaotust ja prioriteetsust. Mõõdik lisatakse juhul, kui projekti ajakava seda võimaldab.
 
 ## Arhitektuur
 
