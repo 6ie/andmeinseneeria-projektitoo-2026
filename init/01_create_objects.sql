@@ -57,3 +57,18 @@ CREATE TABLE intermediate.clean_current_run (
     mk_nimi                     TEXT,
     created_at                  TIMESTAMPTZ DEFAULT NOW()
 );
+
+CREATE TABLE production.jkk_full (
+    id SERIAL   PRIMARY KEY,
+    created_at  TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE production.jkk_removed (
+    id SERIAL   PRIMARY KEY,
+    created_at  TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE production.jkk_changes (
+    id SERIAL   PRIMARY KEY,
+    created_at  TIMESTAMPTZ DEFAULT NOW()
+);
