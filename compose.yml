@@ -29,18 +29,10 @@ x-airflow-common:
     AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: 'true'
     # Rakenduse andmebaasi ühendus — kasutatav DAG-ides PostgresHook kaudu
     AIRFLOW_CONN_ANALYTICS_DB: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@poi-upd-db:5432/${POSTGRES_DB}
-    # dbt ühenduseparameetrid (dbt profiles.yml kasutab neid)
-    POSTGRES_HOST: poi-upd-db
-    POSTGRES_PORT: "5432"
-    POSTGRES_USER: ${POSTGRES_USER}
-    POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-    POSTGRES_DB: ${POSTGRES_DB}
-    _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-dbt-postgres==1.10.0}
     AIRFLOW_CONFIG: '/opt/airflow/config/airflow.cfg'
   volumes:
     - ./airflow/dags:/opt/airflow/dags
     - airflow-logs:/opt/airflow/logs
-    - ./dbt_project:/opt/airflow/dbt_project
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on:
     &airflow-common-depends-on
@@ -52,9 +44,9 @@ x-airflow-common:
 
 services:
 
- # --- Peamine analüütika andmebaas ---
+ # --- Peamine töötluse andmebaas ---
   poi-upd-db:
-    image: pgduckdb/pgduckdb:18-v1.1.1
+    image: postgis/postgis:18-3.6
     container_name: poi-upd-pgdb
     env_file: .env
     environment:
@@ -66,6 +58,7 @@ services:
     volumes:
       - ./init:/docker-entrypoint-initdb.d
       - poi-upd-db-volume:/var/lib/postgresql
+      - ./data:/data:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
       interval: 5s
