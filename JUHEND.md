@@ -80,16 +80,6 @@ Airflow saab lahti võtta aadressil: [http://localhost:8080](http://localhost:80
 
 Matabase saab lahti võtta aadressil [http://localhost:3001](http://localhost:3001)
 
-#### Ühenduse loomine kohaliku masina QGIS-ga
-
-Sea ühenduse parameetrid:
-- host: localhost
-- port: 55432
-- database: projektitoo  
-auth - basic: 
-- user name: .env failist: {POSTGRES_USER}
-- password: .env failist: {POSTGRES_PASSWORD}
-
 ### Esimene andmebaasi käivitus
 
 Meie repos on **init** katalooga ja sinna sisse saame panna schemade tabelite (csv sissetõmbamise) ja protseduuride tekitamise .sql failid. Konteineri käivitamisel jooksutatakse need automaatselt.
@@ -124,9 +114,4 @@ Protseduuri saab välja kutsuda käsuga
 
 ```sql
 CALL intermediate.load_clean_current_run();
-```
-## Andmete konverteerimine intermediate.jkk_curr_clean tabelisse
-
-```bash
-docker exec -it poi-upd-pgdb psql -U projektitoo -d projektitoo -v ON_ERROR_STOP=1 -c "CALL intermediate.refresh_jkk_curr_clean();"
 ```
