@@ -108,7 +108,8 @@ CREATE TABLE production.jkk_removed (
     id SERIAL   PRIMARY KEY,
     jkk_kood    TEXT,
     poi_id      INTEGER,
-    deleted_at  TIMESTAMPTZ DEFAULT NOW()
+    deleted_at  TIMESTAMPTZ DEFAULT NOW(),
+    staatus      TEXT
 );
 
 CREATE TABLE production.jkk_changes (
@@ -154,5 +155,6 @@ CREATE TABLE production.jkk_changes (
     ov_nimi                     TEXT,
     mk_kood                     TEXT,
     mk_nimi                     TEXT,
-    created_at                  TIMESTAMPTZ DEFAULT NOW()
+    created_at                  TIMESTAMPTZ DEFAULT NOW(),
+    staatus                      TEXT
 );
