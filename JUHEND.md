@@ -82,7 +82,7 @@ Matabase saab lahti võtta aadressil [http://localhost:3001](http://localhost:30
 
 ### Esimene andmebaasi käivitus
 
-Meie repos on init katalooga ja sinna sisse saame panna schemade tabelite (csv sissetõmbamise) ja protseduuride tekitamise .sql failid. Konteineri käivitamisel jooksutatakse need automaatselt.
+Meie repos on **init** katalooga ja sinna sisse saame panna schemade tabelite (csv sissetõmbamise) ja protseduuride tekitamise .sql failid. Konteineri käivitamisel jooksutatakse need automaatselt.
 See on Dockeris seadistatus andmebaasi konteineri osas:`/docker-entrypoint-initdb.d`:
 
 
@@ -100,9 +100,18 @@ docker exec -it poi-upd-python sh -c "python /scripts/poi-upd-f_jkkregister_curr
 
 17.05.2026 - Laadis 2953 rida
 20.05.2026 - Laadis 2956 rida
+24.05.2026 - Laadis 2957 rida
 
 ## Andmete sissetõmbamine staging.raw_snapshot tabelisse
 
 ```bash
 docker exec -it poi-upd-python sh -c "python /scripts/poi-upd-f_jkkregister_curr_ingest.py"
+```
+
+## Andmete laadimine intermediate.clean_current_run tabelisse
+Protseduuri kood: /init/02_load_clean_current_run.sql
+Protseduuri saab välja kutsuda käsuga
+
+```sql
+CALL intermediate.load_clean_current_run();
 ```
