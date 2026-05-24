@@ -28,7 +28,7 @@ x-airflow-common:
     AIRFLOW__API_AUTH__JWT_ISSUER: ${AIRFLOW__API_AUTH__JWT_ISSUER:-airflow}
     AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: 'true'
     # Rakenduse andmebaasi ühendus — kasutatav DAG-ides PostgresHook kaudu
-    AIRFLOW_CONN_ANALYTICS_DB: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@poi-upd-db:5432/${POSTGRES_DB}
+    AIRFLOW_CONN_POI_UPD_DB: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@poi-upd-db:5432/${POSTGRES_DB}
     AIRFLOW_CONFIG: '/opt/airflow/config/airflow.cfg'
   volumes:
     - ./airflow/dags:/opt/airflow/dags

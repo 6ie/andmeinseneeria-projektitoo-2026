@@ -117,6 +117,10 @@ docker exec -it poi-upd-python sh -c "python /scripts/poi-upd-f_jkkregister_curr
 docker exec -it poi-upd-python sh -c "python /scripts/poi-upd-f_jkkregister_curr_ingest.py"
 ```
 
+Nüüd saab seda teha ka Airflowga.
+Airflog DAG on projekti kataloogis /airflow/dags/jkk-poi-upd-pipeline.py
+
+
 ## Andmete laadimine intermediate.clean_current_run tabelisse
 Protseduuri kood: /init/02_load_clean_current_run.sql
 Protseduuri saab välja kutsuda käsuga
