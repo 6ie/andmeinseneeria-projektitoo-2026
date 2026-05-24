@@ -12,7 +12,7 @@ from datetime import datetime, timezone
 import os
 
 DB_CONFIG = {   
-    "host": os.getenv("DB_HOST", "analytics-db"),
+    "host": os.getenv("DB_HOST", "poi-upd-db"),
     "port": int(os.getenv("DB_PORT", 5432)),
     "dbname": os.environ["POSTGRES_DB"],
     "user": os.environ["POSTGRES_USER"],
