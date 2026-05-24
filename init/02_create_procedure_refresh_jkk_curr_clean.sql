@@ -33,12 +33,12 @@ BEGIN
         lipikud
     )
     SELECT
-        item->>'objekti_nimetus',
-        item->>'jkk_kood',
-        item->>'kaitaja_nimi',
-        item->>'kaitaja_kood',
-        NULLIF(item->>'x_koordinaat', '')::integer,
-        NULLIF(item->>'y_koordinaat', '')::integer,
+        btrim(regexp_replace(item->>'objekti_nimetus', '\s+', ' ', 'g')) AS objekti_nimetus,
+        btrim(regexp_replace(item->>'jkk_kood', '\s+', ' ', 'g')) AS jkk_kood,
+        btrim(regexp_replace(item->>'kaitaja_nimi', '\s+', ' ', 'g')) AS kaitaja_nimi,
+        btrim(regexp_replace(item->>'kaitaja_kood', '\s+', ' ', 'g')) AS kaitaja_kood,
+        NULLIF(item->>'x_koordinaat', '')::integer AS x_koordinaat,
+        NULLIF(item->>'y_koordinaat', '')::integer AS y_koordinaat,
         NULL,
         NULL,
         NULL,
