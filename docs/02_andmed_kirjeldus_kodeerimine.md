@@ -109,8 +109,8 @@ Sihtsüsteemi kategooriad, mida registri andmed puudutavad:
 | U2 | Ohtlike jäätmete prügila | 2207 |  `Prügila`,`Suletud prügila` | Ohtlike jäätmete prügila |jkk_olukord='Töötav' > `Prügila`, jkk_olukord='Arhiveeritud' > `Suletud prügila` |  
 | U3 | Püsijäätmeprügila | 2207 | `Prügila`,`Suletud prügila`| Püsijäätmeprügila | jkk_olukord='Töötav' > `Prügila`, jkk_olukord='Arhiveeritud' > `Suletud prügila` |
 | U4 | Kaevandamisjäätmete hoidla | - | - | - | ei kaasa |
-| U5 | Sortimisliin, -tehas | 2207 | Jäätmekäitluskoht | Sortimisliin, -tehas |
-| U6 | Ümberlaadimisjaam, vaheladu | 2207 | Jäätmekäitluskoht | Ümberlaadimisjaam, vaheladu |
+| U5 | Sortimisliin, -tehas | 2208 | Jäätmekäitluskoht | Sortimisliin, -tehas |
+| U6 | Ümberlaadimisjaam, vaheladu | 2208 | Jäätmekäitluskoht | Ümberlaadimisjaam, vaheladu |
 | U7 | Jäätmepõletustehas | 2606 | Jäätmepõletustehas | - |
 | U8 | Koospõletustehas | 2606 | Koospõletustehas | - |
 | U9 | Bioloogiline töötlus | - | - | - | ei kaasa
@@ -121,7 +121,7 @@ Sihtsüsteemi kategooriad, mida registri andmed puudutavad:
 | U14 | Vanarehvide käitluskoht | - | - | - | ei kaasa (tihti silo-hoidlad) |
 | U15 | Mobiilne käitluskoht | - | - | - | ei kaasa (pole kindlat asukohta) |
 | U16 | Tavajäätmete käitluskoht | 2208 | Jäätmekäitluskoht | Tavajäätmete käitluskoht |  |
-| U17 | Lisa nimistus puuduv tegevus | 2207 | Jäätmekäitluskoht |  |  |
+| U17 | Lisa nimistus puuduv tegevus | 2208 | Jäätmekäitluskoht |  |  |
 
 ## Esialgne POI seoste CSV
 
