@@ -126,7 +126,7 @@ Protseduuri kood: /init/02_load_clean_current_run.sql
 Protseduuri saab välja kutsuda käsuga
 
 ```sql
-CALL intermediate.load_clean_current_run();
+CALL intermediate.refresh_jkk_curr_clean();
 ```
 
 ## Andmete konverteerimine intermediate.jkk_curr_clean tabelisse

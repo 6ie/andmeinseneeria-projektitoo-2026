@@ -72,7 +72,19 @@ def jkk_poi_update_pipeline():
         print(f"Laaditud {len(data)} jäätmekäitluskohta staging tabelisse")
         return len(data)
 
+    @task
+    def load_jkk_intermediate() -> None:
+        """
+        Käivitab andmebaasi protseduuri andmete laadimiseks staging -> intermediate.
+        """
+        from airflow.providers.postgres.hooks.postgres import PostgresHook
+        from contextlib import closing
 
+        hook = PostgresHook(postgres_conn_id="poi_upd_db")
+        with closing(hook.get_conn()) as conn, conn, conn.cursor() as cur:
+            cur.execute(
+                """CALL intermediate.refresh_jkk_curr_clean();"""
+            )
     # -----------------------------------------------------------------------
     # Sõltuvuste defineerimine
     # -----------------------------------------------------------------------
@@ -80,5 +92,8 @@ def jkk_poi_update_pipeline():
     # Extract ja load
     jkk_data = extract_jkk_data()
     jkk_staging_loaded = load_jkk_staging(jkk_data)
+
+    jkk_intermediate_loaded = load_jkk_intermediate()
+    jkk_staging_loaded >> jkk_intermediate_loaded
 
 jkk_poi_update_pipeline()
