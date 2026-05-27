@@ -5,6 +5,10 @@ Puhastab lähteandmed, määrab tegevus- ja komplekstegevuse koodide ja nime põ
 CREATE OR REPLACE PROCEDURE intermediate.refresh_jkk_curr_clean()
 LANGUAGE plpgsql
 AS $$
+
+DECLARE
+    countrows INTEGER;
+
 BEGIN
     TRUNCATE TABLE intermediate.jkk_curr_clean RESTART IDENTITY;
 
@@ -393,5 +397,9 @@ BEGIN
         liigisona,
         lipikud
     FROM output_rows;
+    
+    GET DIAGNOSTICS countrows = ROW_COUNT;
+    RAISE NOTICE 'Intermediate.jkk_curr_clean tabelisse laetud ridade arv: %', countrows;
+
 END;
 $$;

@@ -6,6 +6,8 @@ Orkestreerib:
 2. Postgre andmebaasi protseduurid andmete transformeerimiseks (staging -> intermediate -> production)
 """
 
+from contextlib import closing
+
 import pendulum
 
 from airflow.providers.standard.operators.bash import BashOperator
@@ -81,10 +83,18 @@ def jkk_poi_update_pipeline():
         from contextlib import closing
 
         hook = PostgresHook(postgres_conn_id="poi_upd_db")
-        with closing(hook.get_conn()) as conn, conn, conn.cursor() as cur:
-            cur.execute(
-                """CALL intermediate.refresh_jkk_curr_clean();"""
-            )
+        conn = hook.get_conn()
+        cur = conn.cursor()
+
+        cur.execute("""CALL intermediate.refresh_jkk_curr_clean();""")
+
+        for notice in conn.notices:
+            print(notice.strip())
+
+        conn.commit()
+        cur.close()
+        conn.close()
+        
     # -----------------------------------------------------------------------
     # Sõltuvuste defineerimine
     # -----------------------------------------------------------------------
