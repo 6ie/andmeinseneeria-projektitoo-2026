@@ -111,26 +111,17 @@ docker exec -it poi-upd-python sh -c "python /scripts/poi-upd-f_jkkregister_curr
 20.05.2026 - Laadis 2956 rida
 24.05.2026 - Laadis 2957 rida
 
-## Andmete sissetõmbamine staging.raw_snapshot tabelisse
+## Andmete sissetõmbamine staging.raw_snapshot tabelisse pyhtoniga (test skript)
 
 ```bash
 docker exec -it poi-upd-python sh -c "python /scripts/poi-upd-f_jkkregister_curr_ingest.py"
 ```
 
-Nüüd saab seda teha ka Airflowga.
+## Airflow DAGi käivitamine Dockeris
+
 Airflog DAG on projekti kataloogis /airflow/dags/jkk-poi-upd-pipeline.py
 
-
-## Andmete laadimine intermediate.clean_current_run tabelisse
-Protseduuri kood: /init/02_load_clean_current_run.sql
-Protseduuri saab välja kutsuda käsuga
-
-```sql
-CALL intermediate.refresh_jkk_curr_clean();
-```
-
-## Andmete konverteerimine intermediate.jkk_curr_clean tabelisse
-
 ```bash
-docker exec -it poi-upd-pgdb psql -U projektitoo -d projektitoo -v ON_ERROR_STOP=1 -c "CALL intermediate.refresh_jkk_curr_clean();"
+docker exec poi-upd-airflow-scheduler \
+    airflow dags trigger jkk-poi-upd-pipeline
 ```
