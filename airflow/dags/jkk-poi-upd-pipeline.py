@@ -94,6 +94,27 @@ def jkk_poi_update_pipeline():
         conn.commit()
         cur.close()
         conn.close()
+
+    @task
+    def load_jkk_removed() -> None:
+        """
+        Käivitab andmebaasi protseduuri kustutatud objektide laadimiseks.
+        """
+        from airflow.providers.postgres.hooks.postgres import PostgresHook
+        from contextlib import closing
+
+        hook = PostgresHook(postgres_conn_id="poi_upd_db")
+        conn = hook.get_conn()
+        cur = conn.cursor()
+
+        cur.execute("""CALL production.load_jkk_removed();""")
+
+        for notice in conn.notices:
+            print(notice.strip())
+
+        conn.commit()
+        cur.close()
+        conn.close()
         
     # -----------------------------------------------------------------------
     # Sõltuvuste defineerimine
@@ -104,6 +125,7 @@ def jkk_poi_update_pipeline():
     jkk_staging_loaded = load_jkk_staging(jkk_data)
 
     jkk_intermediate_loaded = load_jkk_intermediate()
-    jkk_staging_loaded >> jkk_intermediate_loaded
+    jkk_production_removed_loaded = load_jkk_removed()
+    jkk_staging_loaded >> jkk_intermediate_loaded  >> jkk_production_removed_loaded
 
 jkk_poi_update_pipeline()
