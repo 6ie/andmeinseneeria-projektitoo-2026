@@ -104,7 +104,6 @@ BEGIN
         komplekstegevus,
         komplekstegevus_selg,
         jaatmete_kaitlemine,
-        kehtivus_staatus,
 
         jkk_kood_ext,
         nimi,
@@ -141,7 +140,6 @@ BEGIN
         c.komplekstegevus,
         c.komplekstegevus_selg,
         c.jaatmete_kaitlemine,
-        c.kehtivus_staatus,
 
         c.jkk_kood_ext,
         c.nimi,
