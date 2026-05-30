@@ -1,3 +1,233 @@
+# JOOKSEV
+
+## TODO
+
+## Üldine production-refresh põhimõte
+
+Production-kihi uuendamine peab toimuma ühe tervikliku andmebaasitoiminguna.
+
+Uuendustsükli kolm põhisammu on:
+
+1. eemaldatud objektide tuvastamine;
+2. muutunud objektide tuvastamine;
+3. `production.jkk_full` uuendamine.
+
+Need sammud peavad käituma ühe tervikuna.
+
+Kui eemaldatud objektide ja muutuste tuvastamine õnnestub, aga `jkk_full` uuendamine ebaõnnestub, ei tohi ka eemaldatud objektide ega muutuste info production-tabelitesse alles jääda.
+
+Põhimõte:
+
+`Üks jooksutus kas õnnestub tervikuna või ei muuda production-seisu üldse.`
+
+Selleks tuleb teha wrapper-protseduur `production.refresh_jkk_production()`, mis kutsub õiges järjekorras välja alamprotseduurid.
+
+Alamprotseduurid:
+
+* `production.load_jkk_removed()`
+* `production.load_jkk_changed()`
+* `production.move_jkk_curr_to_jkk_full()`
+
+ei tohi sisaldada `COMMIT` ega `ROLLBACK` käske.
+
+Transaction'i terviklikkust juhib wrapper-protseduur ja seda käivitav andmebaasiühendus.
+
+Airflow peaks hiljem käivitama ainult ühe production-kihi käsu:
+
+`CALL production.refresh_jkk_production();`
+
+Airflow ei peaks eraldi orkestreerima `removed`, `changed` ja `full update` samme.
+
+## 1. Teha valmis `production.load_jkk_changed()`
+
+Eesmärk on tuvastada olemasolevate objektide muutused vana production-seisu ja uue intermediate-seisu vahel.
+
+Võrdlus peab käima tabelite `production.jkk_full` ja `intermediate.jkk_curr_clean` vahel.
+
+Võrdlusvõti on `jkk_kood_ext`.
+
+Tuvastada tuleb muutused järgmistes väljades:
+
+* `nimi`
+* `brand`
+* `liigisona`
+* `lipikud`
+* `geom`, kui asukoha muutus on üle 30 m
+
+Tulemused tuleb lisada tabelisse `production.jkk_changes`.
+
+Lisada tuleb duplikaatide vältimine, et sama lahendamata muutust ei lisataks iga jooksutusega uuesti.
+
+Protseduur ei tohi ise teha `COMMIT` ega `ROLLBACK`.
+
+Kui protseduuris tekib viga, peab see liikuma edasi wrapper-protseduurini, et kogu production-refresh katkeks.
+
+## 2. Parandada `production.load_jkk_removed()` loogikaerinevused
+
+Olemasolev `production.load_jkk_removed()` on põhiloogika mõttes olemas, aga vajab täpsustamist.
+
+Täiendada tuleb järgmised kohad:
+
+* võrdlus peaks arvestama `jkk_kood_ext` väärtust, mitte `jkk_kood` väärtust;
+* `remove_resolved_date` peab olema `staatus = -1` korral `current_date`, muudel juhtudel `NULL`;
+* lisada tuleb duplikaatide vältimine, et sama lahendamata eemaldust ei lisataks igal jooksutusel uuesti.
+
+Protseduur ei tohi ise teha `COMMIT` ega `ROLLBACK`.
+
+Kui protseduuris tekib viga, peab see liikuma edasi wrapper-protseduurini, et kogu production-refresh katkeks.
+
+## 3. Kirjutada `production.move_jkk_curr_to_jkk_full()` ümber
+
+Praegune lahendus ei sobi lõplikuks production-uuenduseks.
+
+Uus loogika peab võtma sisendiks `intermediate.jkk_curr_clean`.
+
+Vanast `production.jkk_full` tabelist tuleb säilitada käsitsi hallatavad väljad:
+
+* `poi_id`
+* `staatus`
+* `kommentaar`
+* `added_date`
+* `resolved_date`
+* `geom_mod`
+
+Uutele objektidele tuleb määrata algväärtused:
+
+* `poi_id = NULL`
+* `staatus = 1`
+* `kommentaar = NULL`
+* `added_date = current_date`
+* `resolved_date = NULL`
+* `geom_mod = geom`
+
+Kui objektile ei teki `kat_id` väärtust, siis tuleb rakendada kõrvalejätmise loogikat:
+
+* `poi_id = -1`
+* `staatus = -1`
+* `resolved_date = current_date`
+
+Kui olemasoleva objekti registrigeomeetria on muutunud üle 30 m, tuleb uuendada ka `geom_mod`, sest sellisel juhul ei ole varasem käsitsi korrigeeritud geomeetria enam usaldusväärne.
+
+`jkk_full` uuendamine peab eemaldama objektid, mida uues seisus enam ei ole, aga alles pärast seda, kui removed ja changed info on tuvastatud.
+
+Protseduur ei tohi ise teha `COMMIT` ega `ROLLBACK`.
+
+Kui protseduuris tekib viga, peab see liikuma edasi wrapper-protseduurini, et kogu production-refresh katkeks.
+
+
+## 4. Teha wrapper-protseduur `production.refresh_jkk_production()`
+
+Production-kihi uuendamine peab olema üks terviklik andmebaasitoiming.
+
+Wrapper-protseduur peaks tegema samas järjekorras:
+
+1. `CALL production.load_jkk_removed();`
+2. `CALL production.load_jkk_changed();`
+3. `CALL production.move_jkk_curr_to_jkk_full();`
+
+Need kolm sammu peavad moodustama ühe terviku.
+
+Kui üks samm ebaõnnestub, peab kogu production-refresh katkema.
+
+Wrapper ei pea ise sisaldama `COMMIT` ega `ROLLBACK` käske, kui seda käivitatakse ühe SQL-käsuna tavapärase andmebaasiühenduse kaudu.
+
+Oluline on, et alamprotseduurid ei teeks ise transaction'i lõpetamist ning ei peidaks vigu ära.
+
+Kui veateadet on vaja logida, tuleb vea järel kasutada `RAISE`, et viga liiguks edasi ja kogu transaction katkeks.
+
+## 6. Lisada kontrollid enne `jkk_full` lõplikku uuendamist
+
+Enne vana `jkk_full` asendamist tuleb kontrollida, et uus seis on kasutatav.
+
+Kontrollida vähemalt:
+
+* `jkk_kood_ext` ei ole tühi;
+* `jkk_kood_ext` ei dubleeru;
+* `staatus` väärtus on lubatud väärtus;
+* `staatus = -1` korral on `poi_id = -1`;
+* `staatus IN (-1, 2)` korral on `resolved_date` täidetud;
+* aktiivsetel objektidel on geomeetria olemas.
+
+Kui kontroll ei läbi, tuleb protseduur katkestada `RAISE EXCEPTION` abil.
+
+Kontrollid peavad toimuma enne seda, kui `production.jkk_full` sisu asendatakse.
+
+## 7. Siduda production-refresh Airflow DAG-iga
+
+Airflow tuleks siduda alles siis, kui andmebaasis töötab üks terviklik production-refresh protseduur.
+
+Airflow DAG-i production-samm peaks kutsuma ainult:
+
+`CALL production.refresh_jkk_production();`
+
+Airflow ei peaks eraldi orkestreerima samme:
+
+* `load_jkk_removed`
+* `load_jkk_changed`
+* `move_jkk_curr_to_jkk_full`
+
+Rollback ja production-loogika peaksid jääma andmebaasi poolele.
+
+See teeb Airflow töö lihtsamaks: Airflow kontrollib ainult seda, kas production-refresh tervikuna õnnestus või ebaõnnestus.
+
+## 8. Lisada andmekvaliteedi testid
+
+Lisada SQL-põhised kontrollid, mida saab käsitsi või Airflow kaudu käivitada.
+
+Võimalikud testid:
+
+* `jkk_kood_ext` unikaalsus tabelis `production.jkk_full`;
+* lubatud `staatus` väärtused;
+* `kat_id` puudumisel `staatus = -1`;
+* `staatus = -1` korral `poi_id = -1`;
+* aktiivsetel objektidel `geom` olemasolu;
+* lahendamata removed-kirjete duplikaatide puudumine;
+* lahendamata changed-kirjete duplikaatide puudumine.
+
+Need testid ei pea tingimata olema esimene asi, aga need peaksid olemas olema enne, kui lahendus loetakse valmis production-töövooks.
+
+## 9. Otsustada, kuidas käsitleda Metabase dashboardi püsivust
+
+Metabase dashboard töötab lokaalses arenduskeskkonnas, aga tuleb otsustada, kas ja kuidas seda teha teistele jagatavaks ning automaatselt taastatavaks.
+
+Praegune arusaam:
+
+Metabase tasuta versioonis ei ole mugavat dashboardi koodiks eksportimise ja uuesti importimise lahendust. Valmis dashboardi serialization on Metabase Pro / Enterprise funktsionaalsus.
+
+Võimalikud lahendused:
+
+1. jätta dashboard demo jaoks lokaalsesse Metabase instance'isse;
+2. salvestada dashboardi taga olevad SQL-päringud reposse;
+3. kasutada Metabase API-t, et luua skript, mis tekitab ühenduse PostgreSQL andmebaasiga ning loob küsimused ja dashboardid automaatselt;
+4. säilitada Metabase rakenduse andmebaasi volume või backup, kui eesmärk on ainult lokaalse tööseisu säilitamine.
+
+Otsustamist vajab, milline tase on projekti jaoks piisav:
+
+* kas piisab sellest, et demo saab teha ühe masina Metabase pealt;
+* kas piisab sellest, et SQL-päringud on repos olemas;
+* või peab dashboard tekkima automaatselt pärast Docker Compose käivitamist.
+
+Kui valida API-põhine lahendus, tuleb arvestada eraldi tööga. Lihtsa automaatse ülesseadmise saab tõenäoliselt teha väikese skriptina, aga viimistletud ja töökindel lahendus võtab rohkem aega.
+
+Hetkel jätta see otsustuspunktiks, mitte kohe realiseeritavaks kohustuseks.
+
+## 10. Koristada dokumentatsioon pärast transformatsioonide valmimist
+
+Kui production-loogika on valmis, tuleb dokumentatsioon viia tegeliku lahendusega kooskõlla.
+
+Uuendada vähemalt järgmised failid:
+
+* `docs/03_tulemid_kirjeldus_kodeerimine.md`
+* `docs/arhitektuur.md`
+* `README.md`
+* `docs/progress.md`
+
+Eemaldada tuleb aegunud kirjeldused, mallitekstid ja vahepealsed oletused.
+
+Dokumentatsioonis tuleb ühtlustada geomeetria muutuse piir ning kasutada läbivalt 30 m.
+
+# ESIALGNE
+
 ## Projektitöö TO DO kirjeldused sprindi kaupa
 
 Seda saame järjepidamise mõttes jooksvalt täitma hakata.
@@ -24,6 +254,8 @@ Seda saame järjepidamise mõttes jooksvalt täitma hakata.
 
 
 ### 25.05 - 31.05: Esimene töötav andmevoog
+
+## 
 
 **Eesmärk:**
 
