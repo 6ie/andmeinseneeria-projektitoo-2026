@@ -135,7 +135,8 @@ Oluline on, et alamprotseduurid ei teeks ise transaction'i lõpetamist ning ei p
 
 Kui veateadet on vaja logida, tuleb vea järel kasutada `RAISE`, et viga liiguks edasi ja kogu transaction katkeks.
 
-## 6. Lisada kontrollid enne `jkk_full` lõplikku uuendamist
+
+## 5. Lisada kontrollid enne `jkk_full` lõplikku uuendamist
 
 Enne vana `jkk_full` asendamist tuleb kontrollida, et uus seis on kasutatav.
 
@@ -152,7 +153,7 @@ Kui kontroll ei läbi, tuleb protseduur katkestada `RAISE EXCEPTION` abil.
 
 Kontrollid peavad toimuma enne seda, kui `production.jkk_full` sisu asendatakse.
 
-## 7. Siduda production-refresh Airflow DAG-iga
+## 6. Siduda production-refresh Airflow DAG-iga
 
 Airflow tuleks siduda alles siis, kui andmebaasis töötab üks terviklik production-refresh protseduur.
 
@@ -170,7 +171,7 @@ Rollback ja production-loogika peaksid jääma andmebaasi poolele.
 
 See teeb Airflow töö lihtsamaks: Airflow kontrollib ainult seda, kas production-refresh tervikuna õnnestus või ebaõnnestus.
 
-## 8. Lisada andmekvaliteedi testid
+## 7. Lisada andmekvaliteedi testid
 
 Lisada SQL-põhised kontrollid, mida saab käsitsi või Airflow kaudu käivitada.
 
@@ -186,7 +187,7 @@ Võimalikud testid:
 
 Need testid ei pea tingimata olema esimene asi, aga need peaksid olemas olema enne, kui lahendus loetakse valmis production-töövooks.
 
-## 9. Otsustada, kuidas käsitleda Metabase dashboardi püsivust
+## 8. Otsustada, kuidas käsitleda Metabase dashboardi püsivust
 
 Metabase dashboard töötab lokaalses arenduskeskkonnas, aga tuleb otsustada, kas ja kuidas seda teha teistele jagatavaks ning automaatselt taastatavaks.
 
@@ -211,7 +212,7 @@ Kui valida API-põhine lahendus, tuleb arvestada eraldi tööga. Lihtsa automaat
 
 Hetkel jätta see otsustuspunktiks, mitte kohe realiseeritavaks kohustuseks.
 
-## 10. Koristada dokumentatsioon pärast transformatsioonide valmimist
+## 9. Koristada dokumentatsioon pärast transformatsioonide valmimist
 
 Kui production-loogika on valmis, tuleb dokumentatsioon viia tegeliku lahendusega kooskõlla.
 
@@ -225,6 +226,13 @@ Uuendada vähemalt järgmised failid:
 Eemaldada tuleb aegunud kirjeldused, mallitekstid ja vahepealsed oletused.
 
 Dokumentatsioonis tuleb ühtlustada geomeetria muutuse piir ning kasutada läbivalt 30 m.
+
+## 10. Lisada clean tabeli `brand` veeru tranformatsioonifunktsioon
+
+Funktsioon olemas, saaks rakendada, laetud üles: https://github.com/6ie/andmeinseneeria-projektitoo-2026/blob/main/scripts/todo_or_not_todo/_create_function_clean_comp_name.sql
+
+See todo nice-to-have, ei ole hullu, kui ei jõua.
+
 
 # ESIALGNE
 
