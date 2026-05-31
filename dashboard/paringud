@@ -1,0 +1,33 @@
+***Muudetud kirjete arv***
+SELECT COUNT(*) AS muudetud
+FROM production.jkk_changes;
+
+***Registrist Kustutatud***
+SELECT COUNT(*) AS registrist_kustutatud
+FROM production.jkk_removed;
+
+***Kontrolli vajavad kirjed***
+SELECT
+    COUNT(*) FILTER (WHERE staatus = -1) AS count_minus1,
+    COUNT(*) FILTER (WHERE staatus = 1) AS arv,
+    COUNT(*) FILTER (WHERE staatus IN (1, 2)) AS count_1_2,
+    COUNT(*) AS total_kehtiv,
+
+    -- staatus 1 osakaal kõigist kehtivatest
+    ROUND(
+        COUNT(*) FILTER (WHERE staatus = 1) * 100.0 
+        / NULLIF(COUNT(*), 0),
+        2
+    ) AS share_1_pct,
+
+    -- staatus 1 osakaal ainult staatus 1+2 hulgast
+    ROUND(
+        COUNT(*) FILTER (WHERE staatus = 1) * 100.0 
+        / NULLIF(COUNT(*) FILTER (WHERE staatus IN (1, 2)), 0),
+        2
+    ) AS osakaal
+
+FROM production.jkk_full
+WHERE kehtivus_staatus = 'Kehtiv';
+***link***
+http://localhost:3001/public/dashboard/ea23d97f-268f-46d1-869b-aed2a1928f3e
