@@ -37,4 +37,4 @@ docker exec poi-upd-airflow-scheduler \
     airflow dags trigger jkk-poi-upd-pipeline
 ```
 
-Oodatav tulemus: production kihil on tabelid jkk_full ja jkk_removed
+Oodatav tulemus: production kihil on tabelid jkk_full ja jkk_removed, dasboardi püsivuse lahenduse valmimiseni on dashboardi päringud kaustas \dashboard\paringud
