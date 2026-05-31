@@ -71,18 +71,21 @@ BEGIN
         lipikud,
         poi_id,
         staatus,
-        kommentaar,
+        CASE WHEN staatus=-1 THEN 'Automaatselt lahendatud' 
+             ELSE NULL::text
+        END AS kommentaar,
         added_date,
         resolved_date,
-        NOW()::TIMESTAMPTZ AS removed_date,
-        NULL::date AS remove_resolved_date,
+        CURRENT_DATE::date AS removed_date,
+        CASE WHEN staatus=-1 THEN CURRENT_DATE::date 
+             ELSE NULL::date 
+        END AS remove_resolved_date,
         geom,
         geom_mod
     FROM production.jkk_full
     -- jkk olukord on muutunud kehtivast arhiveerituks
-    WHERE staatus = 2
-        AND jkk_olukord != 'Arhiveeritud'
-        AND jkk_kood IN (SELECT jkk_kood 
+    WHERE jkk_olukord != 'Arhiveeritud'
+        AND jkk_kood_ext IN (SELECT jkk_kood_ext 
                          FROM intermediate.jkk_curr_clean
                          WHERE jkk_olukord = 'Arhiveeritud')
     
@@ -116,18 +119,22 @@ BEGIN
         lipikud,
         poi_id,
         staatus,
-        kommentaar,
+        CASE WHEN staatus=-1 THEN 'Automaatselt lahendatud' 
+             ELSE NULL::text
+        END AS kommentaar,
         added_date,
         resolved_date,
-        NOW()::TIMESTAMPTZ AS removed_date,
-        NULL::date AS remove_resolved_date,
+        CURRENT_DATE::date AS removed_date,           
+        CASE WHEN staatus=-1 THEN CURRENT_DATE::date 
+             ELSE NULL::date 
+        END AS remove_resolved_date,
         geom,
         geom_mod
     FROM production.jkk_full
     -- jkk objekt on registrist eemaldatud
-    WHERE staatus = 2
-        AND jkk_kood NOT IN (SELECT jkk_kood 
+    WHERE jkk_kood_ext NOT IN (SELECT jkk_kood_ext 
                            FROM intermediate.jkk_curr_clean)
+    ORDER BY staatus
     ;
 
     GET DIAGNOSTICS countrows = ROW_COUNT;

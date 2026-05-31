@@ -68,9 +68,9 @@ Olemasolev `production.load_jkk_removed()` on põhiloogika mõttes olemas, aga v
 
 Täiendada tuleb järgmised kohad:
 
-* võrdlus peaks arvestama `jkk_kood_ext` väärtust, mitte `jkk_kood` väärtust;
-* `remove_resolved_date` peab olema `staatus = -1` korral `current_date`, muudel juhtudel `NULL`;
-* lisada tuleb duplikaatide vältimine, et sama lahendamata eemaldust ei lisataks igal jooksutusel uuesti.
+- [x] võrdlus peaks arvestama `jkk_kood_ext` väärtust, mitte `jkk_kood` väärtust; TEHTUD
+- [x] `remove_resolved_date` peab olema `staatus = -1` korral `current_date`, muudel juhtudel `NULL`; TEHTUD
+- [ ] lisada tuleb duplikaatide vältimine, et sama lahendamata eemaldust ei lisataks igal jooksutusel uuesti.
 
 Protseduur ei tohi ise teha `COMMIT` ega `ROLLBACK`.
 
@@ -117,6 +117,9 @@ Kui protseduuris tekib viga, peab see liikuma edasi wrapper-protseduurini, et ko
 
 ## 4. Teha wrapper-protseduur `production.refresh_jkk_production()`
 
+TEHTUD
+Testisin, et removed kihi uuendus ROLLBACKitakse, kui changed kihiga tekib mingi jama. Airflows on näha baasi veateade. (Õie)
+
 Production-kihi uuendamine peab olema üks terviklik andmebaasitoiming.
 
 Wrapper-protseduur peaks tegema samas järjekorras:
@@ -154,6 +157,8 @@ Kui kontroll ei läbi, tuleb protseduur katkestada `RAISE EXCEPTION` abil.
 Kontrollid peavad toimuma enne seda, kui `production.jkk_full` sisu asendatakse.
 
 ## 6. Siduda production-refresh Airflow DAG-iga
+
+TEHTUD
 
 Airflow tuleks siduda alles siis, kui andmebaasis töötab üks terviklik production-refresh protseduur.
 
