@@ -61,6 +61,7 @@ BEGIN
         CASE
             WHEN curr.kat_id IS NULL THEN CURRENT_DATE
             WHEN curr.jkk_olukord = 'Arhiveeritud' THEN CURRENT_DATE
+            WHEN prev.poi_id IS NOT NULL AND prev.poi_id != -1 THEN CURRENT_DATE
             ELSE NULL
         END AS resolved_date,
 
@@ -109,7 +110,12 @@ BEGIN
     --    RAISE EXCEPTION 'ERROR: staatus = -1, kuid poi_id != -1';
     --END IF;
 
-    -- 5) Kehtival objektil (staatus not -1) peab olema geomeetria
+    -- 5) Kui staatus IN (-1,2), siis resolved_date peab olema täidetud
+    IF (SELECT COUNT(*) FROM tmp_new_jkk_full WHERE staatus IN (-1,2) AND resolved_date IS NULL) > 0 THEN
+        RAISE EXCEPTION 'ERROR: resolved_date peab olema täidetud, kui staatus IN (-1, 2)';
+    END IF;
+
+    -- 6) Kehtival objektil (staatus != -1) peab olema geomeetria
     IF (SELECT COUNT(*) FROM tmp_new_jkk_full WHERE staatus != -1 AND geom IS NULL) > 0 THEN
         RAISE EXCEPTION 'ERROR: Kehtival objektil (staatus != -1) peab olema geomeetria';
     END IF;

@@ -141,16 +141,18 @@ Kui veateadet on vaja logida, tuleb vea järel kasutada `RAISE`, et viga liiguks
 
 ## 5. Lisada kontrollid enne `jkk_full` lõplikku uuendamist
 
+TEHTUD
+
 Enne vana `jkk_full` asendamist tuleb kontrollida, et uus seis on kasutatav.
 
 Kontrollida vähemalt:
 
-* `jkk_kood_ext` ei ole tühi;
-* `jkk_kood_ext` ei dubleeru;
-* `staatus` väärtus on lubatud väärtus;
-* `staatus = -1` korral on `poi_id = -1`;
-* `staatus IN (-1, 2)` korral on `resolved_date` täidetud;
-* aktiivsetel objektidel on geomeetria olemas.
+- [x] `jkk_kood_ext` ei ole tühi; - TEHTUD
+- [x] `jkk_kood_ext` ei dubleeru; - TEHTUD
+- [x] `staatus` väärtus on lubatud väärtus; - TEHTUD
+- [ ] `staatus = -1` korral on `poi_id = -1`; Ei saa rakendada, sest kui POI baasis olemasolev POI muutub arhiveerituks, siis tal on korraga nii POI_ID kui ka määratakse staatus =-1;
+- [x] `staatus IN (-1, 2)` korral on `resolved_date` täidetud;
+- [x] aktiivsetel objektidel on geomeetria olemas. - TEHTUD
 
 Kui kontroll ei läbi, tuleb protseduur katkestada `RAISE EXCEPTION` abil.
 
@@ -185,7 +187,7 @@ Võimalikud testid:
 * `jkk_kood_ext` unikaalsus tabelis `production.jkk_full`;
 * lubatud `staatus` väärtused;
 * `kat_id` puudumisel `staatus = -1`;
-* `staatus = -1` korral `poi_id = -1`; Ei saa rakendada, sest kui POI baasis olemasolev POI muutub arhiveerituks, siis tal on korraga nii POI_ID kui ka määratakse staatus =-1 (Õie)
+* `staatus = -1` korral `poi_id = -1`; Ei saa rakendada, sest kui POI baasis olemasolev POI muutub arhiveerituks, siis tal on korraga nii POI_ID kui ka määratakse staatus =-1;
 * aktiivsetel objektidel `geom` olemasolu;
 * lahendamata removed-kirjete duplikaatide puudumine;
 * lahendamata changed-kirjete duplikaatide puudumine.
