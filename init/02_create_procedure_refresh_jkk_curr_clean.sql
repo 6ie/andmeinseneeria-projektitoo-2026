@@ -57,8 +57,7 @@ BEGIN
             NULLIF(btrim(regexp_replace(item->>'muudetud', '\s+', ' ', 'g')), '') AS muudetud,
             NULLIF(btrim(regexp_replace(item->>'komplekstegevus', '\s+', ' ', 'g')), '') AS komplekstegevus,
             NULLIF(btrim(regexp_replace(item->>'komplekstegevus_selg', '\s+', ' ', 'g')), '') AS komplekstegevus_selg,
-            NULLIF(btrim(regexp_replace(item->>'jaatmete_kaitlemine', '\s+', ' ', 'g')), '') AS jaatmete_kaitlemine,
-            NULLIF(btrim(regexp_replace(item->>'kehtivus_staatus', '\s+', ' ', 'g')), '') AS kehtivus_staatus
+            NULLIF(btrim(regexp_replace(item->>'jaatmete_kaitlemine', '\s+', ' ', 'g')), '') AS jaatmete_kaitlemine
         FROM json_rows
     ),
 
@@ -324,7 +323,6 @@ BEGIN
             cr.komplekstegevus,
             cr.komplekstegevus_selg,
             cr.jaatmete_kaitlemine,
-            cr.kehtivus_staatus,
 
             gc.kat_id,
             gc.liigisona,
@@ -353,7 +351,6 @@ BEGIN
         komplekstegevus,
         komplekstegevus_selg,
         jaatmete_kaitlemine,
-        kehtivus_staatus,
 
         jkk_kood_ext,
         nimi,
@@ -382,7 +379,6 @@ BEGIN
         komplekstegevus,
         komplekstegevus_selg,
         jaatmete_kaitlemine,
-        kehtivus_staatus,
 
         CASE
             WHEN jkk_kood IS NULL THEN NULL
