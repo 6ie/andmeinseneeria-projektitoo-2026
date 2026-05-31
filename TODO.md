@@ -185,7 +185,7 @@ Võimalikud testid:
 * `jkk_kood_ext` unikaalsus tabelis `production.jkk_full`;
 * lubatud `staatus` väärtused;
 * `kat_id` puudumisel `staatus = -1`;
-* `staatus = -1` korral `poi_id = -1`;
+* `staatus = -1` korral `poi_id = -1`; Ei saa rakendada, sest kui POI baasis olemasolev POI muutub arhiveerituks, siis tal on korraga nii POI_ID kui ka määratakse staatus =-1 (Õie)
 * aktiivsetel objektidel `geom` olemasolu;
 * lahendamata removed-kirjete duplikaatide puudumine;
 * lahendamata changed-kirjete duplikaatide puudumine.
