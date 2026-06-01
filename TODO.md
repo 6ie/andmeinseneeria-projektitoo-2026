@@ -40,6 +40,8 @@ Airflow ei peaks eraldi orkestreerima `removed`, `changed` ja `full update` samm
 
 ## 1. Teha valmis `production.load_jkk_changed()`
 
+TEHTUD
+
 Eesmärk on tuvastada olemasolevate objektide muutused vana production-seisu ja uue intermediate-seisu vahel.
 
 Võrdlus peab käima tabelite `production.jkk_full` ja `intermediate.jkk_curr_clean` vahel.
@@ -77,6 +79,8 @@ Protseduur ei tohi ise teha `COMMIT` ega `ROLLBACK`.
 Kui protseduuris tekib viga, peab see liikuma edasi wrapper-protseduurini, et kogu production-refresh katkeks.
 
 ## 3. Kirjutada `production.move_jkk_curr_to_jkk_full()` ümber
+
+TEHTUD
 
 Praegune lahendus ei sobi lõplikuks production-uuenduseks.
 
@@ -181,6 +185,7 @@ See teeb Airflow töö lihtsamaks: Airflow kontrollib ainult seda, kas productio
 ## 7. Lisada andmekvaliteedi testid
 
 Lisada SQL-põhised kontrollid, mida saab käsitsi või Airflow kaudu käivitada.
+Neid asju enne jkk_changed ja jkk_full tabeli ülekirjutamist kontrollitakse. Kas on eraldi veel vaja kontrollida? (Õie)
 
 Võimalikud testid:
 
