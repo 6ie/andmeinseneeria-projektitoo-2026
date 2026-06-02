@@ -184,20 +184,23 @@ See teeb Airflow töö lihtsamaks: Airflow kontrollib ainult seda, kas productio
 
 ## 7. Lisada andmekvaliteedi testid
 
-Lisada SQL-põhised kontrollid, mida saab käsitsi või Airflow kaudu käivitada.
-Neid asju enne jkk_changed ja jkk_full tabeli ülekirjutamist kontrollitakse. Kas on eraldi veel vaja kontrollida? (Õie)
+TEHTUD
 
-Võimalikud testid:
+Lisada SQL-põhised kontrollid, mille läbimine on andmebaasi protseduuride läbimise eelduseks. Kui test ei läbi tekib RAISE EXCEPTION, protseduuri töö peatub ja juba tehtud protseduuride sammud pööratakse tagasi.
 
+Kontrollid enne intermediate.jkk_curr_clean andmete laadimist:
+* Andmete terviklikkuse kontroll: Värskeim snapshot peab sisaldama vähemalt 90% objekte võrreldes eelmise snapshotiga
+* Asukohatäpsuse kontroll: Värskeimas snapshotis ei tohi olla rohkem kui 25% objektidest puuduva geomeetiaga või asuda väljaspool Eestit
+
+Kontrollid enne production schema jkk_changed/jkk_full tabelite ülekirjutamist:
 * `jkk_kood_ext` unikaalsus tabelis `production.jkk_full`;
 * lubatud `staatus` väärtused;
 * `kat_id` puudumisel `staatus = -1`;
 * `staatus = -1` korral `poi_id = -1`; Ei saa rakendada, sest kui POI baasis olemasolev POI muutub arhiveerituks, siis tal on korraga nii POI_ID kui ka määratakse staatus =-1;
 * aktiivsetel objektidel `geom` olemasolu;
-* lahendamata removed-kirjete duplikaatide puudumine;
+* lahendamata removed-kirjete duplikaatide puudumine; Otsustasime, et ei tee (vist?)
 * lahendamata changed-kirjete duplikaatide puudumine.
 
-Need testid ei pea tingimata olema esimene asi, aga need peaksid olemas olema enne, kui lahendus loetakse valmis production-töövooks.
 
 ## 8. Otsustada, kuidas käsitleda Metabase dashboardi püsivust
 

@@ -8,8 +8,98 @@ AS $$
 
 DECLARE
     countrows INTEGER;
+    latest_row_count INTEGER;
+    previous_row_count INTEGER;
+    latest_fetched_at TIMESTAMPTZ;
+    invalid_geom_count INTEGER;
+    invalid_geom_percentage NUMERIC;
 
 BEGIN
+    
+      --=== KONTROLLID ==--
+    -- Andmete terviklikkuse kontroll: Värskeim snapshot peab sisaldama vähemalt 90% objekte võrreldes eelmise snapshotiga
+    -- Värskeima snapshoti objektide arv
+    SELECT row_count, fetched_at 
+    INTO latest_row_count, latest_fetched_at
+    FROM staging.raw_snapshot
+    WHERE source_name = 'f_jkkregister_curr'
+      AND status = 'SUCCESS'
+    ORDER BY fetched_at DESC
+    LIMIT 1;
+
+    -- Kui ühtegi jkk registri snapshoti ei leitud
+    IF latest_row_count IS NULL THEN
+        RAISE EXCEPTION 'ERROR: Ei leitud ühtegi jkk registri snapshoti';
+    END IF;
+
+    -- Eelmise korra objektide arv
+    SELECT row_count 
+    INTO previous_row_count
+    FROM staging.raw_snapshot
+    WHERE source_name = 'f_jkkregister_curr'
+      AND status = 'SUCCESS'
+      AND fetched_at < latest_fetched_at
+    ORDER BY fetched_at DESC
+    LIMIT 1;
+
+    -- Kui eelmise korra snapshot on olemas, 
+    -- siis kontrollib, kas värskeim snapshot sisaldab vähemalt 90% objekte
+    IF previous_row_count IS NOT NULL THEN
+        IF latest_row_count < (previous_row_count * 0.9) THEN
+            RAISE EXCEPTION 'ERROR: Andmete terviklikkuse viga: Uus jkk registri snapshots (% objekti) sisaldab vähem kui 90%% eelmise korra snapshotist (% objekti)', 
+                latest_row_count, previous_row_count;
+        END IF;
+    END IF;
+
+    -- Asukohatäpsuse kontroll: Värskeimas snapshotis ei tohi olla rohkem kui 25% objektidest
+    -- puuduva geomeetiaga või asuda väljaspool Eestit
+    WITH latest_snapshot AS (
+        SELECT raw_data
+        FROM staging.raw_snapshot
+        WHERE source_name = 'f_jkkregister_curr'
+          AND status = 'SUCCESS'
+        ORDER BY fetched_at DESC
+        LIMIT 1
+    ),
+    json_with_coords AS (
+        SELECT
+            item->>'jkk_kood' AS jkk_kood,
+            NULLIF(btrim(item->>'x_koordinaat'), '')::integer AS x,
+            NULLIF(btrim(item->>'y_koordinaat'), '')::integer AS y
+        FROM latest_snapshot,
+             jsonb_array_elements(raw_data) AS item
+    ),
+    geom_validation AS (
+        SELECT
+            CASE
+                -- Koordinaadid puuduvad
+                WHEN x IS NULL OR y IS NULL THEN 1
+                -- Eesti alast väljaspool (EPSG:3301)
+                WHEN x < 6370000 
+                  OR x > 6650000 
+                  OR y < 350000 
+                  OR y > 750000 THEN 1
+                ELSE 0
+            END AS is_invalid
+        FROM json_with_coords
+    )
+    SELECT COUNT(*) FILTER (WHERE is_invalid = 1)
+    INTO invalid_geom_count
+    FROM geom_validation;
+
+    -- Arvutab vigase geomeetriaga objektide protsendi
+    invalid_geom_percentage := ROUND((invalid_geom_count::numeric / latest_row_count) * 100, 2);
+
+    IF invalid_geom_percentage > 25 THEN
+        RAISE EXCEPTION 'ERROR: Asukohatäpsuse viga: %.2f%% objektidest puudub geomeetria või asub väljaspool Eesti ala', 
+            invalid_geom_percentage;
+    END IF;
+
+    RAISE NOTICE 'Intermediate.jkk_curr_clean värskendamise kontrollid läbitud: % objekti läheb laadimisse (% objekti oli eelmises laadimises), % neist on vigase geomeetriaga',
+    latest_row_count, previous_row_count, invalid_geom_count;
+
+    --=== ANDMEUUENDUS ==--
+    -- Kui kõik kontrollid on läbitud, siis jätkame intermediate.jkk_curr_clean tabeli värskendamisega.
     TRUNCATE TABLE intermediate.jkk_curr_clean RESTART IDENTITY;
 
     WITH latest_snapshot AS (
