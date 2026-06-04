@@ -209,6 +209,7 @@ services:
     image: metabase/metabase:latest
     container_name: poi-upd-metabase
     hostname: metabase
+    env_file: .env  
     volumes:
       - ./dashboard:/dashboard
     ports:

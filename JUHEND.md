@@ -125,3 +125,20 @@ Airflog DAG on projekti kataloogis /airflow/dags/jkk-poi-upd-pipeline.py
 docker exec poi-upd-airflow-scheduler \
     airflow dags trigger jkk-poi-upd-pipeline
 ```
+## Metabase dashboardi uuendamine
+
+Kui oled dashboardis muudatusi teinud tee uus dump.
+
+Tee dump (PowerShellis, mitte Git Bashis):
+
+```powershell
+docker exec poi-upd-pgdb bash -c "pg_dump -U projektDash -Fc -f /docker-entrypoint-initdb.d/metabase_appdb.dump metabase_appdb"
+```
+
+Kontrolli, et dump on korralik:
+
+```powershell
+docker exec poi-upd-pgdb bash -c "pg_restore --list /docker-entrypoint-initdb.d/metabase_appdb.dump | head -5"
+```
+
+Väljundis peaks olema TOC Entries: mõni positiivne arv ja dbname: metabase_appdb.

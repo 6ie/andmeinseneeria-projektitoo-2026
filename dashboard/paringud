@@ -28,6 +28,34 @@ SELECT
     ) AS osakaal
 
 FROM production.jkk_full
-WHERE kehtivus_staatus = 'Kehtiv';
-***link***
-http://localhost:3001/public/dashboard/ea23d97f-268f-46d1-869b-aed2a1928f3e
+WHERE jkk_olukord = 'Töötav';
+
+***Püü pirukas, kehtivad kirjed ainult***
+SELECT
+    kategooria,
+    count(*) AS arv
+FROM (
+    SELECT
+        CASE
+            WHEN staatus = -1 THEN 'Sihtbaasi jaoks kasutu'
+            WHEN staatus = 2 AND poi_id IS NOT NULL AND poi_id <> -1 THEN 'Kontrollitud, seotud'
+            WHEN staatus = 2 AND coalesce(poi_id, -1) = -1 THEN 'Kontrollitud, sidumata'
+            WHEN staatus = 1 THEN 'Kontrollimata'
+            ELSE 'Muu / vigane staatus'
+        END AS kategooria,
+
+        CASE
+            WHEN staatus = -1 THEN 1
+            WHEN staatus = 2 AND poi_id IS NOT NULL AND poi_id <> -1 THEN 2
+            WHEN staatus = 2 AND coalesce(poi_id, -1) = -1 THEN 3
+            WHEN staatus = 1 THEN 4
+            ELSE 99
+        END AS sort_order
+    FROM production.jkk_full
+    WHERE jkk_olukord = 'Töötav'
+) x
+GROUP BY
+    kategooria,
+    sort_order
+ORDER BY
+    sort_order;
