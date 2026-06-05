@@ -22,7 +22,9 @@ flowchart LR
     source[Andmeallikas] --> ingest[Sissevõtt]
     ingest --> staging[(staging)]
     staging --> transform[Transformatsioon]
-    transform --> mart[(mart)]
+    transform --> intermediate[(intermediate)]
+    intermediate --> transform+validation[Transformatsioon + kontrollid]
+    transform+validation --> mart[(mart)]
     mart --> dashboard[Näidikulaud]
 ```
 
@@ -85,7 +87,7 @@ Vajalikud muutujad:
 ## Andmevoog lühidalt
 
 1. **Sissevõtt** — Airflow DAG `jkk-poi-upd-pipeline` pärib igal ööl jäätmekäitlusregistri API-lt JSON-snapshoti.
-2. **Laadimine** — Snapshot salvestatakse `staging.raw_snapshot` tabelisse koos `run_id` ja laadimise ajaga (idempotentne).
+2. **Laadimine** — Snapshot salvestatakse `staging.raw_snapshot` tabelisse koos `run_id` ja laadimise ajaga.
 3. **Transformatsioon** — Andmebaasi protseduurid normaliseerivad ja puhastavad andmed `intermediate.clean_current_run` tabelisse, seejärel võrreldakse eelmise seisuga: tuvastatakse uued, eemaldatud ja muutunud objektid.
 4. **Production kiht** — `jkk_full` kirjutatakse üle värske seisuga; `jkk_removed` saab kumulatiivselt eemaldatud objektid; `jkk_changes` hoiab atribuudi- ja asukohamuutuste tööjärge. Muutused logitakse nii, et spetsialist saab need asüsünkroonselt üle kontrollida ja lisada sihtbaasi vastava kuupäeva.
 5. **Andmekvaliteet** — Kontrollid käivituvad enne production kihi uuendamist. Vea korral säilitatakse eelmine korrektne seis.
@@ -95,9 +97,10 @@ Vajalikud muutujad:
 
 Projekt kontrollib järgmist:
 
-1. **not null** — põhiväljade (nt registriobjekti ID, koordinaadid) kohustuslikkus
+1. **not null** — põhiväljade (registriobjekti ID, koordinaadid) kohustuslikkus
 2. **Unikaalsus** — registriobjekti ID on unikaalne `jkk_full` tabelis
 3. **Kirjete arvu loogikakontroll** — kaitseb osalise API vastuse eest: kui uues jooksus on kirjeid eeldatust oluliselt vähem, peatatakse töövoog hoiatusega
+4. **Asukohatäpsuse kontroll** - kaitseb olukorra eest, kui koordinaadid (X,Y) on vahetusse läinud või toimunud muu ruumiline transformatsioon mistõttu koordinaadid on enamikul kirjeltel täitmata või ei asu Eesti ala piires
 
 Testide tulemused on nähtavad Airflow DAG logides. 
 Toimub ka andmete puhastus liigsetest tühikutest, ning näidikulaual indikeeritakse võimalikud ruumilise ulatuse vead.
@@ -144,6 +147,6 @@ Toimub ka andmete puhastus liigsetest tühikutest, ning näidikulaual indikeerit
 
 | Nimi | Roll |
 |------|------|
-| Õie | Andmeallika omanik (sissevõtu loogika), andmekvaliteedi testid |
+| Õie | Andmeallika omanik (sissevõtu loogika), orkestreerimine, andmekvaliteedi testid |
 | Püü | Transformatsioonide omanik (puhastamine, muutuste tuvastamine), andmekvaliteedi testid |
 | Lea | Näidikulaua omanik  ja administratiivtöö |
