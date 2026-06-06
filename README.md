@@ -138,6 +138,7 @@ Toimub ka andmete puhastus liigsetest tühikutest, ning näidikulaual indikeerit
 
 **Puudused:**
 - Lahendus kasutab transformatsioonides andmebaasi protseduure dbt asemel — see kaldub kursuse soovituslikust stackist kõrvale, kuid on teadlik valik lähtuvalt meeskonna kompetentsist ja organisatsiooni praktikatest.
+- Andmeterviklikkuse testi tuleks täiendada. Hetkel tekib olukord, kus mitmes järjestikune ebaloomulikult väheste objektide arvuga API vastust läheb läbi. Tuleks täiendada `staging.raw_snapshot` kihti veeruga pipeline_run_log, kuhu logitakse väärtused ERROR/SUCCESS, kas terve andmetoru läbis vigadeta või ei. Andmeterviklikkuse test peaks võrdlema uut seidu viimase edukalt läbinud seisu andmetega.
 - Metabase andmebaasi püsivus lahendati kirve meetodil dump + restore skriptiga.
 
 **Mis edasi:**
