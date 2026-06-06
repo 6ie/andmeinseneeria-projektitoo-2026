@@ -21,8 +21,8 @@ Näitab kaardil, kus lahendamata muudatused paiknevad, et spetsialist saaks hinn
 flowchart LR
     source[Andmeallikas] --> ingest[Sissevõtt]
     ingest --> staging[(staging)]
-    staging --> transform[Transformatsioon]
-    transform --> intermediate[(intermediate)]
+    staging --> transform+clean[Transformatsioon + puhastamine]
+    transform+clean --> intermediate[(intermediate)]
     intermediate --> transform+validation[Transformatsioon + kontrollid]
     transform+validation --> mart[(mart)]
     mart --> dashboard[Näidikulaud]
@@ -80,17 +80,19 @@ Vajalikud muutujad:
 
 | Muutuja | Tähendus |
 |---------|----------|
-| `DB_PASSWORD` | PostgreSQL parool |
-| `AIRFLOW__CORE__FERNET_KEY` | Airflow krüpteerimisvõti |
-| `METABASE_DB_PASSWORD` | Metabase sisemise andmebaasi parool |
+| `POSTGRES_PASSWORD` | PostgreSQL parool |
+| `PGADMIN_DEFAULT_PASSWORD` | pgAdmin parool |
+| `AIRFLOW_PASSWORD` | Airflow metaandmebaasi parool |
+| `_AIRFLOW_WWW_USER_PASSWORD` | Airflow parool |
+| `MB_DB_PASS` | Metabase metaandmebaasi parool |
 
 ## Andmevoog lühidalt
 
 1. **Sissevõtt** — Airflow DAG `jkk-poi-upd-pipeline` pärib igal ööl jäätmekäitlusregistri API-lt JSON-snapshoti.
-2. **Laadimine** — Snapshot salvestatakse `staging.raw_snapshot` tabelisse koos `run_id` ja laadimise ajaga.
-3. **Transformatsioon** — Andmebaasi protseduurid normaliseerivad ja puhastavad andmed `intermediate.clean_current_run` tabelisse, seejärel võrreldakse eelmise seisuga: tuvastatakse uued, eemaldatud ja muutunud objektid.
-4. **Production kiht** — `jkk_full` kirjutatakse üle värske seisuga; `jkk_removed` saab kumulatiivselt eemaldatud objektid; `jkk_changes` hoiab atribuudi- ja asukohamuutuste tööjärge. Muutused logitakse nii, et spetsialist saab need asüsünkroonselt üle kontrollida ja lisada sihtbaasi vastava kuupäeva.
-5. **Andmekvaliteet** — Kontrollid käivituvad enne production kihi uuendamist. Vea korral säilitatakse eelmine korrektne seis.
+2. **Laadimine (staging)** — Snapshot salvestatakse `staging.raw_snapshot` tabelisse koos `run_id` ja laadimise ajaga.
+3. **Puhastamine (intermediate)** — Staging tabeli viimane seis peab läbima andmete terviklikkuse ja asukohatäpsuse testid. Andmebaasi protseduurid normaliseerivad ja puhastavad andmed ja need laetakse `intermediate.clean_current_run` tabelisse.
+4. **Transformatsioon (production)** — Võrreldakse eelmise seisu andmeid (`jkk_full` enne ülekirjutamist) uute ja puhastatud andmetega kihis  `intermediate.clean_current_run`. Tuvastatakse uued, eemaldatud ja muutunud objektid. `jkk_removed` kihile kirjutatakse kumulatiivselt registrist eemaldatud objektid; `jkk_changes` hoiab atribuudi- ja asukohamuutuste tööjärge. Kui kvaliteedikontrollid läbivad, siis viimase sammuna kirjutataske  `jkk_full` üle värske seisuga; Muutused logitakse nii, et spetsialist saab need asüsünkroonselt üle kontrollida ja lisada sihtbaasi vastava kuupäeva. 
+5. **Andmekvaliteet** — Kontrollid käivituvad enne `intermediate.clean_current_run` ja `jkk_full` kihtide uuendamist. Vea korral säilitatakse eelmine korrektne seis.
 6. **Näidikulaud** — Metabase näitab lahendamata muudatuste arvu, osakaalu ja jaotust tüübi järgi.
 
 ## Andmekvaliteedi testid

@@ -51,8 +51,11 @@ Toorandmete säilitamine võimaldab hiljem kontrollida, millise registriseisu p�
 
 `intermediate` kihis viiakse jooksu andmed kahemõõtmelise tabeli kujul, milles on andmed normaliseeritud ja võrdluseks sobivale kujule viidud. See kiht ei ole mõeldud kasutaja käsitsi tööks, vaid ETL protsessi vahetulemuseks.
 
-Selles kihis hoitakse üldjuhul ainult viimase jooksu puhastatud seisu. Seda võrreldakse `production.jkk_full` tabelis oleva varasema seisuga, et tuvastada uued, eemaldatud ja muutunud objektid.
+Enne kihi ülekirjutamiset uue jooksu andmetega, peavad läbima andmete terviklikkuse ja asukohatäpsuse testid:
+- Värskei API vastus peab sisaldama vähemalt 90% objekte võrreldes eelmise korra andmetega
+- Värskeimas API vastuses ei tohi olla rohkem kui 25% objektidest puuduva geomeetiaga või asuda väljaspool Eestit
 
+Selles kihis hoitakse üldjuhul ainult viimase jooksu puhastatud seisu. Seda võrreldakse `production.jkk_full` tabelis oleva varasema seisuga, et tuvastada uued, eemaldatud ja muutunud objektid.
 
 ### production kiht
 
@@ -67,22 +70,28 @@ Nendes tabelites on koos automaatselt ETL poolt hallatavad veerud ja spetsialist
 
 Algne jäätmekäitluskohtade registri ja sihtbaasi POI objektide seoste CSV laetakse algseadistuse käigus production kihti abistava seoste tabelina. Seda ei käsitleta jooksvalt uueneva allikana, vaid stardiseisuna, mille põhjal saab olemasolevad registriobjektid siduda ettevõtte POI andmebaasi objektidega.
 
+Kui kogu andmetoru töö läbib vigadeta, siis viimase asjana kirjutatakse `jkk_full` kiht üle värskeima registri seisuga.
+Production kihi kontrollid enne  `jkk_full` kihi ülekirjutamist:
+- jkk_kood_ext ei tohi olla NULL või tühi
+- jkk_kood_ext peab olema unikaalne
+- staatus veeru lubatud väärtused on -1, 1, 2
+- kui staatus IN (-1,2), siis resolved_date peab olema täidetud
+- kehtival objektil (staatus != -1) peab olema geomeetria
+
 ## Tööjaotus
 
-| Roll | Vastutus | Täitja |
-|------|----------|--------|
-| Andmeallika omanik | Kirjutab sissevõtu loogika | Õie |
-| Transformatsioonide omanik | Kirjutab andmete puhastamise, ümber kodeerimise ja muutuste tuvastamise loogika | Püü |
-| Kvaliteedi omanik | Kirjutab testid ja vaatab läbi ebaõnnestunud kontrollid | Õie ja Püü |
-| Näidikulaua omanik | Ehitab näidikulaua ja seob selle äriküsimusega | Lea |
-| Administratiivtöö omanik | Korraldab projektihalduse, suhtluse ja ajakava | Lea |
+| Nimi | Roll |
+|------|------|
+| Õie | Andmeallika omanik (sissevõtu loogika), orkestreerimine, andmekvaliteedi testid |
+| Püü | Transformatsioonide omanik (puhastamine, muutuste tuvastamine), andmekvaliteedi testid |
+| Lea | Näidikulaua omanik  ja administratiivtöö |
 
 ## Riskid
 
 | Risk | Mõju | Maandus |
 |------|------|---------|
-| API vastus on tühi json | Andmeid ei ole | Väljastatakse hoiatus ja peatatakse töövoog, eksponentviivitus |
-| API vastus on osaline | Võib tekkida eksitav tulemus, et tuleks suur osa andmetest sihtbaasis kustutada | Kirjete arvu loogikakontroll, päise, veerunimede, 'not null' kontroll |
+| API vastus on tühi json | Andmeid ei ole | Väljastatakse hoiatus ja peatatakse töövoog |
+| API vastus on osaline | Võib tekkida eksitav tulemus, et tuleks suur osa andmetest sihtbaasis kustutada | Kirjete arvu loogikakontroll (kontroll peaks toimima ka mitme järjestikuse osalise vastuse puhul), päise, veerunimede, 'not null' kontroll |
 | Töövoog ei jookse edukalt lõpuni | Võrdlusbaas (full baas) täidetakse osaliselt ning edasised võrdlused on ekslikud | Uuendused tehakse alles pärast kontrollide läbimist; vea korral säilitatakse eelmine korrektne seis |
 
 ## Privaatsus ja turve
