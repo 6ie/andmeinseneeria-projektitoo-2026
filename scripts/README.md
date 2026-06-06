@@ -1,0 +1,1 @@
+Siin kataloogis on skriptid, mis projektitööna esitatava andmetoru jaoks kasutuses ei ole, kuid olid vajalikud alguses API vastuse testimiseks või plaanis kasutusele võtta tulevikus andmetoru edasiarendamisel.

@@ -120,7 +120,6 @@ def jkk_poi_update_pipeline():
     # Sõltuvuste defineerimine
     # -----------------------------------------------------------------------
 
-    # Extract ja load
     jkk_data = extract_jkk_data()
     jkk_staging_loaded = load_jkk_staging(jkk_data)
 
