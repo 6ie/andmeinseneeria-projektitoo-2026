@@ -20,10 +20,17 @@ if [ "$DB_EXISTS" = "1" ]; then
   exit 0
 fi
 
+METABASE_USER="projektDash"
+
 echo "Creating database ${DB_NAME}..."
-createdb -U "$POSTGRES_USER" "$DB_NAME"
+createdb -U "$POSTGRES_USER" -O "$METABASE_USER" "$DB_NAME"
 
 echo "Restoring Metabase app DB from dump..."
-pg_restore -U "$POSTGRES_USER" -d "$DB_NAME" "$DUMP_FILE"
+pg_restore -U "$POSTGRES_USER" --no-owner --no-acl -d "$DB_NAME" "$DUMP_FILE"
+
+echo "Granting privileges to ${METABASE_USER}..."
+psql -U "$POSTGRES_USER" -d "$DB_NAME" -c "GRANT ALL PRIVILEGES ON DATABASE ${DB_NAME} TO \"${METABASE_USER}\";"
+psql -U "$POSTGRES_USER" -d "$DB_NAME" -c "GRANT ALL ON ALL TABLES IN SCHEMA public TO \"${METABASE_USER}\";"
+psql -U "$POSTGRES_USER" -d "$DB_NAME" -c "GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO \"${METABASE_USER}\";"
 
 echo "Metabase restore finished."
