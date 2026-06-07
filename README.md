@@ -2,7 +2,7 @@
 
 ## Äriküsimus
 
-Ärivajadus on hoida jäätmekäitlusregistri põhised huvipunktide andmed ettevõtte POI andmebaasis maksimaalselt ajakohasena võimalikult vähese käsitööga. Lahendus peab lisaks sisestusvalmis muudatuste ette valmistamisele andma ülevaate nende käsitlemise seisust, et spetsialist saaks hinnata töömahtu, andmete ajakohasust ja andmehoolduse prioriteete.
+Ärivajadus on hoida avaandmete (näidisandmekoguks jäätmekäitluskohade register) põhised huvipunktide andmed ettevõtte POI andmebaasis maksimaalselt ajakohasena võimalikult vähese käsitööga. Lahendus peab lisaks sisestusvalmis muudatuste ette valmistamisele andma ülevaate nende käsitlemise seisust, et spetsialist saaks hinnata töömahtu, andmete ajakohasust ja andmehoolduse prioriteete.
 
 **Mõõdikud:**
 
@@ -24,11 +24,12 @@ flowchart LR
     staging --> transform+clean[Transformatsioon + puhastamine]
     transform+clean --> intermediate[(intermediate)]
     intermediate --> transform+validation[Transformatsioon + kontrollid]
-    transform+validation --> mart[(mart)]
-    mart --> dashboard[Näidikulaud]
+    transform+validation --> production[(production)]
+    production--> dashboard[Näidikulaud]
 ```
 
-Täpsem kirjeldus: [`docs/arhitektuur.md`](docs/arhitektuur.md)
+Täpsem kirjeldus: [`docs/arhitektuur.md`](docs/arhitektuur.md)  
+![Arhitektuuriskeem](docs/arhitektuuriskeem.drawio.svg)
 
 ## Andmestik
 
@@ -36,6 +37,7 @@ Täpsem kirjeldus: [`docs/arhitektuur.md`](docs/arhitektuur.md)
 |---------|------|--------------|------|
 | [Jäätmekäitluskohtade register](https://keskkonnaandmed.envir.ee/f_jkkregister_curr) | Avalik PostgREST/JSON API | Jah, uueneb jooksvalt | Peamine andmeallikas |
 | Algne POI ja JKKR seoste tabel | CSV (ühekordne algseadistuse tabel) | Ei, staatiline | Olemasolevate registriobjektide sidumine POI andmebaasiga |
+| Algne JKKR seis | JSON (ühekordne registri algseisu tabel) | Ei, staatiline | Esmane tabeli täitmine registri algseisuga, et saaks testida muutuste tuvastamist |
 
 ## Stack
 
@@ -43,7 +45,7 @@ Täpsem kirjeldus: [`docs/arhitektuur.md`](docs/arhitektuur.md)
 |-----------|---------|
 | Sissevõtt | Python |
 | Transformatsioon | PostgreSQL protseduurid (SQL) |
-| Andmehoidla | PostgreSQL |
+| Andmehoidla | PostgreSQL/PostGIS |
 | Näidikulaud | Metabase |
 | Orkestreerimine | Airflow |
 | Keskkond | Docker Compose |
@@ -67,7 +69,7 @@ docker exec poi-upd-airflow-scheduler \
     airflow dags trigger jkk-poi-upd-pipeline
 ```
 
-Airflow: http://localhost:8080 (kasutaja: airflow / parool: airflow)
+Airflow: http://localhost:8080
 Metabase: http://localhost:3001
 
 Täpsem kirjeldus: JUHEND.md
@@ -91,7 +93,7 @@ Vajalikud muutujad:
 1. **Sissevõtt** — Airflow DAG `jkk-poi-upd-pipeline` pärib igal ööl jäätmekäitlusregistri API-lt JSON-snapshoti.
 2. **Laadimine (staging)** — Snapshot salvestatakse `staging.raw_snapshot` tabelisse koos `run_id` ja laadimise ajaga.
 3. **Puhastamine (intermediate)** — Staging tabeli viimane seis peab läbima andmete terviklikkuse ja asukohatäpsuse testid. Andmebaasi protseduurid normaliseerivad ja puhastavad andmed ja need laetakse `intermediate.clean_current_run` tabelisse.
-4. **Transformatsioon (production)** — Võrreldakse eelmise seisu andmeid (`jkk_full` enne ülekirjutamist) uute ja puhastatud andmetega kihis  `intermediate.clean_current_run`. Tuvastatakse uued, eemaldatud ja muutunud objektid. `jkk_removed` kihile kirjutatakse kumulatiivselt registrist eemaldatud objektid; `jkk_changes` hoiab atribuudi- ja asukohamuutuste tööjärge. Kui kvaliteedikontrollid läbivad, siis viimase sammuna kirjutataske  `jkk_full` üle värske seisuga; Muutused logitakse nii, et spetsialist saab need asüsünkroonselt üle kontrollida ja lisada sihtbaasi vastava kuupäeva. 
+4. **Transformatsioon (production)** — Võrreldakse eelmise seisu andmeid (`jkk_full` enne ülekirjutamist) uute ja puhastatud andmetega kihis  `intermediate.clean_current_run`. Tuvastatakse uued, eemaldatud ja muutunud objektid. `jkk_removed` kihile kirjutatakse kumulatiivselt registrist eemaldatud objektid; `jkk_changes` hoiab atribuudi- ja asukohamuutuste tööjärge. Kui kvaliteedikontrollid on läbitud, siis viimase sammuna kirjutataske  `jkk_full` üle värske seisuga; Muutused logitakse nii, et spetsialist saab need asüsünkroonselt üle kontrollida ja lisada sihtbaasi vastava kuupäeva. 
 5. **Andmekvaliteet** — Kontrollid käivituvad enne `intermediate.clean_current_run` ja `jkk_full` kihtide uuendamist. Vea korral säilitatakse eelmine korrektne seis.
 6. **Näidikulaud** — Metabase näitab lahendamata muudatuste arvu, osakaalu ja jaotust tüübi järgi.
 
@@ -111,20 +113,27 @@ Toimub ka andmete puhastus liigsetest tühikutest, ning näidikulaual indikeerit
 
 ```
 .
-├── README.md
+├── README.md       ← ülevaade projektist
 ├── compose.yml
 ├── .env.example
 ├── .gitignore
-├── docs/
-│   ├── arhitektuur.md
-│   └── progress.md
-├── dags/
-│   └── jkk_poi_upd_pipeline.py
-├── sql/
-│   └── ...                 ← staging, intermediate, production protseduurid
+├── docs/ 
+│   └── ...         ← projekti dokumentatsioon
+├── data/
+│   └── ...         ← abi-andmed - esmased seosed sihtbaasiga 
+├── airflow/
+│   └── dags/
+│       └── jkk_poi_upd_pipeline.py
+├── init/
+│   └── ...         ← andmebaasiobjektide loomise sql-id
+│       ...         ← andmete transformeerimise protseduuride sql-id
+│       ...         ← metabase seadstuse taastamise skript ja dump
 ├── dashboard/
-│   └── paringud/           ← Metabase päringud (julgestus)
-└── ...
+│   └── ...         ← Metabase päringud
+├── scripts/
+│   └── ...         ← abiskriptid ja kontrollskriptid
+├── TODO.md         ← Tööjärje pidamise abidokument
+└── JUHEND.md       ← Komponentide testimise ja käivitamise abijuhend
 ```
 
 ## Kokkuvõte, puudused ja võimalikud edasiarendused
@@ -142,7 +151,8 @@ Toimub ka andmete puhastus liigsetest tühikutest, ning näidikulaual indikeerit
 - Metabase andmebaasi püsivus lahendati kirve meetodil dump + restore skriptiga.
 
 **Mis edasi:**
-- Edaspidi tasuks uurida transformatsioonide lahendamist dbt abil.
+- Edaspidi tasuks uurida transformatsioonide lahendamist dbt abil
+- Transformatsioonide täiustamine on pidev töö. Alles andmevoo reaalsesse kasutusse võtmise järgselt hakkavad välja tulema võimalused ja vajadused, kuidas objektid paremini sihtbaasi jaoks vajalikule kujule viia ning kuidas leida ja raporteerida ainult neid muutuseid, mis sisulist tähtsust omavad.
 - Ruumilise paiknemise lisamine näidikulauale -ideaalis võiks saada pärda ka konkreetse huviala kohta. (Reaalne ärijuht - lokaalse huviga klient)
 
 

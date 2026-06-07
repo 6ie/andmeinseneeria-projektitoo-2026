@@ -78,7 +78,7 @@ Tabelis hoitakse neid objekte, mis on olemas viimases registri seisus. See tabel
 | `added_date` | `date` | Süsteemi hallatav | Kuupäev, millal objekt tabelisse lisati. | Kuupäev. Täidetakse automaatselt uue rea lisamisel. |
 | `resolved_date` | `date` | Spetsialisti hallatav | Kuupäev, millal objekt loeti lahendatuks. | Kuupäev või tühi väärtus. Täidetakse siis, kui `staatus` muutub väärtuseks `2` või `-1`. |
 | `geom` | `geometry(Point, 3301)` | Transformatsioon | Registri koordinaatidest loodud punktgeomeetria. | EPSG:3301 punkt. Arvutatakse `x_koordinaat` ja `y_koordinaat` väärtuste põhjal. |
-| `geom_mod` | `geometry(Point, 3301)` | Spetsialisti hallatav | Geomeetria, mida saab vajadusel käsitsi korrigeerida. | EPSG:3301 punkt. Uue objekti lisandumisel sama, mis registris. olemasolevate objektide puhul - juhul kui registri geomeetria muutub rohkem, kui 50m siis üle kirjutada registri geomeetriaga, kui vähem, siis säilitada objekti küles olev geomeetria. |
+| `geom_mod` | `geometry(Point, 3301)` | Spetsialisti hallatav | Geomeetria, mida saab vajadusel käsitsi korrigeerida. | EPSG:3301 punkt. Uue objekti lisandumisel sama, mis registris. olemasolevate objektide puhul - juhul kui registri geomeetria muutub rohkem, kui 30m siis üle kirjutada registri geomeetriaga, kui vähem, siis säilitada objekti küles olev geomeetria. |
 
 ### Kasutatavad väärtusvarud
 

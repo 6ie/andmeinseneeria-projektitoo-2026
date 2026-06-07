@@ -43,6 +43,11 @@ docker compose -p poi-upd restart
 ```bash
 docker compose -p poi-upd down -v
 ```
+#### Kui tahad konteineri ja volume-d ära kustutada
+
+```bash
+docker compose -p poi-upd down -v --remove-orphans
+```
 
 ### Teenused
 
