@@ -112,20 +112,29 @@ Toimub ka andmete puhastus liigsetest tühikutest, ning näidikulaual indikeerit
 
 ```
 .
-├── README.md
+├── README.md       ← ülevaade projektist
 ├── compose.yml
 ├── .env.example
 ├── .gitignore
-├── docs/
-│   ├── arhitektuur.md
-│   └── progress.md
-├── dags/
-│   └── jkk_poi_upd_pipeline.py
-├── sql/
-│   └── ...                 ← staging, intermediate, production protseduurid
+├── docs/ 
+│   └── ...         ← projekti dokumentatsioon
+├── data/
+│   ├── data_exploration_help/ 
+│   │   └── ...     ← abi-päringud andmete uurimiseks
+│   └── ...         ← abi-andmed - esmased seosed sihtbaasiga 
+├── airflow/
+│   └── dags/
+│       └── jkk_poi_upd_pipeline.py
+├── init/
+│   └── ...         ← andmebaasiobjektide loomise sql-id
+│       ...         ← andmete transformeerimise protseduuride sql-id
+│       ...         ← metabase seadstuse taastamise skript ja dump
 ├── dashboard/
-│   └── paringud/           ← Metabase päringud (julgestus)
-└── ...
+│   └── ...         ← Metabase päringud
+├── scripts/
+│   └── ...         ← abiskriptid ja kontrollskriptid
+├── TODO.md         ← Tööjärje pidamise abidokument
+└── JUHEND.md       ← Komponentide testimise ja käivitamise abijuhend
 ```
 
 ## Kokkuvõte, puudused ja võimalikud edasiarendused

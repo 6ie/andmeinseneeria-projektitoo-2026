@@ -2,45 +2,9 @@
 
 ## TODO
 
-## Üldine production-refresh põhimõte
-
-Production-kihi uuendamine peab toimuma ühe tervikliku andmebaasitoiminguna.
-
-Uuendustsükli kolm põhisammu on:
-
-1. eemaldatud objektide tuvastamine;
-2. muutunud objektide tuvastamine;
-3. `production.jkk_full` uuendamine.
-
-Need sammud peavad käituma ühe tervikuna.
-
-Kui eemaldatud objektide ja muutuste tuvastamine õnnestub, aga `jkk_full` uuendamine ebaõnnestub, ei tohi ka eemaldatud objektide ega muutuste info production-tabelitesse alles jääda.
-
-Põhimõte:
-
-`Üks jooksutus kas õnnestub tervikuna või ei muuda production-seisu üldse.`
-
-Selleks tuleb teha wrapper-protseduur `production.refresh_jkk_production()`, mis kutsub õiges järjekorras välja alamprotseduurid.
-
-Alamprotseduurid:
-
-* `production.load_jkk_removed()`
-* `production.load_jkk_changed()`
-* `production.move_jkk_curr_to_jkk_full()`
-
-ei tohi sisaldada `COMMIT` ega `ROLLBACK` käske.
-
-Transaction'i terviklikkust juhib wrapper-protseduur ja seda käivitav andmebaasiühendus.
-
-Airflow peaks hiljem käivitama ainult ühe production-kihi käsu:
-
-`CALL production.refresh_jkk_production();`
-
-Airflow ei peaks eraldi orkestreerima `removed`, `changed` ja `full update` samme.
-
 ## 1. Teha valmis `production.load_jkk_changed()`
 
-TEHTUD
+✅ Tehtud
 
 Eesmärk on tuvastada olemasolevate objektide muutused vana production-seisu ja uue intermediate-seisu vahel.
 
@@ -65,13 +29,14 @@ Protseduur ei tohi ise teha `COMMIT` ega `ROLLBACK`.
 Kui protseduuris tekib viga, peab see liikuma edasi wrapper-protseduurini, et kogu production-refresh katkeks.
 
 ## 2. Parandada `production.load_jkk_removed()` loogikaerinevused
+✅ Tehtud
 
 Olemasolev `production.load_jkk_removed()` on põhiloogika mõttes olemas, aga vajab täpsustamist.
 
 Täiendada tuleb järgmised kohad:
 
-- [x] võrdlus peaks arvestama `jkk_kood_ext` väärtust, mitte `jkk_kood` väärtust; TEHTUD
-- [x] `remove_resolved_date` peab olema `staatus = -1` korral `current_date`, muudel juhtudel `NULL`; TEHTUD
+- [x] võrdlus peaks arvestama `jkk_kood_ext` väärtust, mitte `jkk_kood` väärtust; 
+- [x] `remove_resolved_date` peab olema `staatus = -1` korral `current_date`, muudel juhtudel `NULL`; 
 - [ ] lisada tuleb duplikaatide vältimine, et sama lahendamata eemaldust ei lisataks igal jooksutusel uuesti.
 
 Protseduur ei tohi ise teha `COMMIT` ega `ROLLBACK`.
@@ -80,7 +45,7 @@ Kui protseduuris tekib viga, peab see liikuma edasi wrapper-protseduurini, et ko
 
 ## 3. Kirjutada `production.move_jkk_curr_to_jkk_full()` ümber
 
-TEHTUD
+✅ Tehtud
 
 Praegune lahendus ei sobi lõplikuks production-uuenduseks.
 
@@ -121,7 +86,7 @@ Kui protseduuris tekib viga, peab see liikuma edasi wrapper-protseduurini, et ko
 
 ## 4. Teha wrapper-protseduur `production.refresh_jkk_production()`
 
-TEHTUD
+✅ Tehtud  
 Testisin, et removed kihi uuendus ROLLBACKitakse, kui changed kihiga tekib mingi jama. Airflows on näha baasi veateade. (Õie)
 
 Production-kihi uuendamine peab olema üks terviklik andmebaasitoiming.
@@ -145,7 +110,7 @@ Kui veateadet on vaja logida, tuleb vea järel kasutada `RAISE`, et viga liiguks
 
 ## 5. Lisada kontrollid enne `jkk_full` lõplikku uuendamist
 
-TEHTUD
+✅ Tehtud
 
 Enne vana `jkk_full` asendamist tuleb kontrollida, et uus seis on kasutatav.
 
@@ -164,7 +129,7 @@ Kontrollid peavad toimuma enne seda, kui `production.jkk_full` sisu asendatakse.
 
 ## 6. Siduda production-refresh Airflow DAG-iga
 
-TEHTUD
+✅ Tehtud
 
 Airflow tuleks siduda alles siis, kui andmebaasis töötab üks terviklik production-refresh protseduur.
 
@@ -184,7 +149,7 @@ See teeb Airflow töö lihtsamaks: Airflow kontrollib ainult seda, kas productio
 
 ## 7. Lisada andmekvaliteedi testid
 
-TEHTUD
+✅ Tehtud
 
 Lisada SQL-põhised kontrollid, mille läbimine on andmebaasi protseduuride läbimise eelduseks. Kui test ei läbi tekib RAISE EXCEPTION, protseduuri töö peatub ja juba tehtud protseduuride sammud pööratakse tagasi.
 
@@ -203,6 +168,8 @@ Kontrollid enne production schema jkk_changed/jkk_full tabelite ülekirjutamist:
 
 
 ## 8. Otsustada, kuidas käsitleda Metabase dashboardi püsivust
+
+✅ Tehtud, otsus - kasutame DB dump-i
 
 Metabase dashboard töötab lokaalses arenduskeskkonnas, aga tuleb otsustada, kas ja kuidas seda teha teistele jagatavaks ning automaatselt taastatavaks.
 
@@ -229,6 +196,7 @@ Hetkel jätta see otsustuspunktiks, mitte kohe realiseeritavaks kohustuseks.
 
 ## 9. Koristada dokumentatsioon pärast transformatsioonide valmimist
 
+✅ Tehtud  
 Kui production-loogika on valmis, tuleb dokumentatsioon viia tegeliku lahendusega kooskõlla.
 
 Uuendada vähemalt järgmised failid:
@@ -244,12 +212,18 @@ Dokumentatsioonis tuleb ühtlustada geomeetria muutuse piir ning kasutada läbiv
 
 ## 10. Lisada clean tabeli `brand` veeru tranformatsioonifunktsioon
 
+❌ Tegemata (jääb edasiarenduseks)
+
 Funktsioon olemas, saaks rakendada, laetud üles: https://github.com/6ie/andmeinseneeria-projektitoo-2026/blob/main/scripts/todo_or_not_todo/_create_function_clean_comp_name.sql
 
 See todo nice-to-have, ei ole hullu, kui ei jõua.
 
+## 11. Lisada näidikulauale kaart muutuste kohta
 
-# ESIALGNE
+❌ Tegemata (jääb edasiarenduseks)
+
+
+# AMETLIKUD NÕUDED PROJEKTITÖÖLE
 
 ## Projektitöö TO DO kirjeldused sprindi kaupa
 
