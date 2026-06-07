@@ -37,6 +37,7 @@ Täpsem kirjeldus: [`docs/arhitektuur.md`](docs/arhitektuur.md)
 |---------|------|--------------|------|
 | [Jäätmekäitluskohtade register](https://keskkonnaandmed.envir.ee/f_jkkregister_curr) | Avalik PostgREST/JSON API | Jah, uueneb jooksvalt | Peamine andmeallikas |
 | Algne POI ja JKKR seoste tabel | CSV (ühekordne algseadistuse tabel) | Ei, staatiline | Olemasolevate registriobjektide sidumine POI andmebaasiga |
+| Algne JKKR seis | JSON (ühekordne registri algseisu tabel) | Ei, staatiline | Esmane tabeli täitmine registri algseisuga, et saaks testida muutuste tuvastamist |
 
 ## Stack
 
@@ -119,8 +120,6 @@ Toimub ka andmete puhastus liigsetest tühikutest, ning näidikulaual indikeerit
 ├── docs/ 
 │   └── ...         ← projekti dokumentatsioon
 ├── data/
-│   ├── data_exploration_help/ 
-│   │   └── ...     ← abi-päringud andmete uurimiseks
 │   └── ...         ← abi-andmed - esmased seosed sihtbaasiga 
 ├── airflow/
 │   └── dags/
